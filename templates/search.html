@@ -1,0 +1,205 @@
+{% extends "common/layout.html" %}
+
+
+<!-- Module CSS -->
+{% block module_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/search.css') }}">
+{% endblock %}
+
+
+<!-- Page Title -->
+{% block page_title %}
+Search Module
+{% endblock %}
+
+
+<!-- Top Navbar Title -->
+{% block module_title %}
+Search Module
+{% endblock %}
+
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+{% block sidebar %}
+
+<!-- Source Filter -->
+<div class="sidebar-card">
+    <div class="card-title">Source</div>
+
+    <label><input type="checkbox" checked> ALL</label>
+    <label><input type="checkbox" checked> AZURE</label>
+    <label><input type="checkbox" checked> SNOW</label>
+    <label><input type="checkbox" checked> PTC</label>
+</div>
+
+
+<!-- User Group Mapping -->
+<div class="sidebar-card">
+    <div class="card-title">User Group Mapping</div>
+
+    <button class="secondary-btn">
+        Manage Mapping
+    </button>
+</div>
+
+
+<!-- Filters -->
+<div class="sidebar-card">
+    <div class="card-title">Filters</div>
+
+    <select id="statusFilter">
+        <option>Status</option>
+    </select>
+
+    <select id="priorityFilter">
+        <option>Priority</option>
+    </select>
+
+    <select id="groupFilter">
+        <option>Group</option>
+    </select>
+
+    <button class="primary-btn">
+        Apply Filters
+    </button>
+</div>
+
+
+<!-- Date Filter -->
+<div class="sidebar-card">
+    <div class="card-title">Date Filter</div>
+
+    <select>
+        <option>Created Date</option>
+        <option>Resolved Date</option>
+    </select>
+
+    <div class="radio-group">
+        <label><input type="radio" name="dateType"> No Filter</label>
+        <label><input type="radio" name="dateType"> Date Range</label>
+        <label><input type="radio" name="dateType"> By Year</label>
+        <label><input type="radio" name="dateType"> Quick Select</label>
+    </div>
+</div>
+
+
+<!-- KPI -->
+<div class="sidebar-card">
+    <div class="card-title">KPI</div>
+
+    <div class="kpi-grid">
+
+        <div class="kpi-box">
+            <span>Total</span>
+            <h3>{{ kpi.total }}</h3>
+        </div>
+
+        <div class="kpi-box">
+            <span>Open</span>
+            <h3>{{ kpi.open }}</h3>
+        </div>
+
+        <div class="kpi-box">
+            <span>Closed</span>
+            <h3>{{ kpi.closed }}</h3>
+        </div>
+
+        <div class="kpi-box">
+            <span>Cancelled</span>
+            <h3>{{ kpi.cancelled }}</h3>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+<!-- =========================
+     TOOLBAR
+========================= -->
+{% block toolbar %}
+
+<div class="top-toolbar">
+
+    <input type="text"
+           id="searchInput"
+           class="toolbar-search-input"
+           placeholder="Search issue...">
+
+    <button id="searchBtn"
+            class="primary-btn">
+        Search
+    </button>
+
+    <select class="toolbar-select">
+        <option>10</option>
+        <option>25</option>
+        <option>50</option>
+    </select>
+
+    <select class="toolbar-select">
+        <option>1</option>
+        <option>2</option>
+    </select>
+
+    <button id="downloadBtn"
+            class="primary-btn">
+        Download
+    </button>
+
+</div>
+
+{% endblock %}
+
+
+
+<!-- =========================
+     CONTENT
+========================= -->
+{% block content %}
+
+<div class="search-results-container">
+
+    <table id="searchResultsTable">
+
+        <thead>
+            <tr>
+                <th>Sl No</th>
+                <th>Number</th>
+                <th>Description</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Created By</th>
+                <th>Created Date</th>
+                <th>Assigned To</th>
+                <th>Resolved Date</th>
+                <th>Source</th>
+                <th>Open</th>
+            </tr>
+        </thead>
+
+        <tbody id="searchResultsBody">
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<div class="last-refresh">
+    Last refreshed: {{ last_refresh }}
+</div>
+
+{% endblock %}
+
+
+
+<!-- Module JS -->
+{% block module_js %}
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+{% endblock %}

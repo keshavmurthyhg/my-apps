@@ -772,6 +772,24 @@ def download_converter_file(
     )
 
 # -----------------------------
+# SEARCH MODULE
+# -----------------------------
+@app.route("/search")
+def search_page():
+    from modules.search.data_loader import load_data
+    from modules.search.kpi import calculate_kpi
+
+    df, last_refresh = load_data()
+    kpi = calculate_kpi(df)
+
+    return render_template(
+        "search.html",
+        last_refresh=last_refresh,
+        kpi=kpi
+    )
+
+
+# -----------------------------
 # OTHER MODULES
 # -----------------------------
 @app.route("/bulk")

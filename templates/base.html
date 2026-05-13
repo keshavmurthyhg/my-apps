@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!--<title>Ops Platform</title>-->
 
-    <!-- Global CSS -->
+    <title>{% block title %}Ops Platform{% endblock %}</title>
+
+    <!-- Common CSS -->
     <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/app.css') }}">
+          href="{{ url_for('static', filename='css/common.css') }}">
 
-    <!-- Page specific CSS -->
+    <!-- Module specific CSS -->
     {% block page_css %}
     {% endblock %}
 </head>
@@ -20,7 +21,6 @@
     <!-- SIDEBAR -->
     <aside class="sidebar compact-sidebar">
 
-        <!-- App Title -->
         <div class="sidebar-title">
             Ops Platform
         </div>
@@ -34,7 +34,13 @@
     <!-- MAIN CONTENT -->
     <div class="main-content">
 
-        <main class="content-area">
+        {% block top_nav %}
+        {% endblock %}
+
+        {% block toolbar %}
+        {% endblock %}
+
+        <main>
             {% block content %}
             {% endblock %}
         </main>
@@ -42,6 +48,14 @@
     </div>
 
 </div>
+
+
+<!-- Common JS -->
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+
+<!-- Module JS -->
+{% block page_js %}
+{% endblock %}
 
 </body>
 </html>

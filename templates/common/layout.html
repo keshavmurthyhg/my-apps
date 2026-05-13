@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>
+        {% block page_title %}
+        Ops Platform
+        {% endblock %}
+    </title>
+
+    <!-- Common CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/common.css') }}">
+
+    <!-- Module CSS -->
+    {% block module_css %}
+    {% endblock %}
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-title">
+            Ops Platform
+        </div>
+
+        <div class="sidebar-content">
+            {% block sidebar %}
+            {% endblock %}
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <!-- Top Navigation -->
+        <div class="top-nav-bar">
+
+            <div class="top-nav-left">
+                <button class="top-home-btn"
+                        onclick="goHome()">
+                    🏠 Home
+                </button>
+            </div>
+
+            <div class="top-nav-center">
+                <div class="module-title-pill">
+                    {% block module_title %}
+                    Module
+                    {% endblock %}
+                </div>
+            </div>
+
+            <div class="top-nav-right">
+                <button class="help-btn">?</button>
+            </div>
+
+        </div>
+
+
+        <!-- Toolbar -->
+        {% block toolbar %}
+        {% endblock %}
+
+
+        <!-- Main Content -->
+        <div class="scrollable-report-content">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Common JS -->
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+
+<!-- Module JS -->
+{% block module_js %}
+{% endblock %}
+
+</body>
+</html>

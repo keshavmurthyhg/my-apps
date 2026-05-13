@@ -1,0 +1,147 @@
+/* =========================
+   SEARCH RESULTS CONTAINER
+========================= */
+.search-results-container {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow-x: auto;
+    margin-bottom: 15px;
+}
+
+
+/* =========================
+   SEARCH TABLE
+========================= */
+#searchResultsTable {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1100px;
+}
+
+#searchResultsTable th {
+    background: #f3f4f6;
+    color: #172b46;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+#searchResultsTable td {
+    padding: 10px;
+    font-size: 12px;
+    color: #374151;
+    border-bottom: 1px solid #eeeeee;
+    white-space: nowrap;
+}
+
+#searchResultsTable tr:hover {
+    background: #f9fafb;
+}
+
+
+/* =========================
+   OPEN LINK
+========================= */
+#searchResultsTable a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+#searchResultsTable a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================
+   LAST REFRESH
+========================= */
+.last-refresh {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 10px;
+}
+
+
+/* =========================
+   SIDEBAR RADIO GROUP
+========================= */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.radio-group label {
+    font-size: 12px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* =========================
+   KPI GRID
+========================= */
+/* =========================
+   KPI GRID
+========================= */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.kpi-box {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+    min-height: 70px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.kpi-box span {
+    font-size: 11px;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.kpi-box h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+}
+
+
+/* =========================
+   SEARCH PAGINATION SELECTS
+========================= */
+.toolbar-select {
+    min-width: 55px;
+}
+
+
+/* =========================
+   EMPTY TABLE MESSAGE (future use)
+========================= */
+.empty-search-message {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+    font-size: 14px;
+}
