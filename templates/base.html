@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--<title>Ops Platform</title>-->
+
+    <!-- Global CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/app.css') }}">
+
+    <!-- Page specific CSS -->
+    {% block page_css %}
+    {% endblock %}
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar compact-sidebar">
+
+        <!-- App Title -->
+        <div class="sidebar-title">
+            Ops Platform
+        </div>
+
+        {% block sidebar %}
+        {% endblock %}
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <main class="content-area">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

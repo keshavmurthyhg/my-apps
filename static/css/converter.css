@@ -1,0 +1,259 @@
+/* =========================
+   CONVERTER ACTION SECTION
+========================= */
+
+.converter-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.sidebar-action-btn {
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Convert button */
+#convertBtn {
+    background: #2d8cff;
+    color: white;
+}
+
+#convertBtn:hover {
+    background: #1d73da;
+}
+
+/* Generate button */
+#generateBtn {
+    background: #ffb020;
+    color: white;
+}
+
+#generateBtn:hover:not(:disabled) {
+    background: #e29a0c;
+}
+
+/* Download button */
+#downloadBtn {
+    background: #28a745;
+    color: white;
+}
+
+#downloadBtn:hover {
+    background: #1f8a39;
+}
+
+/* Disabled state */
+.sidebar-action-btn:disabled {
+    background: #6b7280;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Hidden download button */
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================
+   STATUS PANEL IMPROVEMENT
+========================= */
+
+.status-panel {
+    padding: 15px;
+}
+
+.status-panel h4 {
+    font-size: 11px;
+    color: white;
+    margin-bottom: 12px;
+}
+
+.progress-wrapper {
+    margin-bottom: 12px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #3bd16f;
+    transition: width 0.4s ease;
+}
+
+.progress-text {
+    font-size: 1px;
+    color: #d9e3f0;
+    margin-top: 8px;
+}
+
+.status-message {
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    margin-top: 10px;
+}
+
+
+/* =========================
+   PREVIEW CARD
+========================= */
+
+#previewContainer {
+    min-height: 300px;
+}
+
+/* =========================
+   custom upload wrapper styled
+========================= */
+
+.custom-file-upload {
+    display: flex;
+    align-items: center;
+
+    width: 280px;
+    height: 30px;
+
+    background:  rgba(255,255,255,0.12);;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.file-upload-label {
+    background: white;
+    color: #1d3454;
+
+    height: 20px;
+    padding: 0 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    transition: 0.2s ease;
+}
+
+.file-upload-label:hover {
+    background: #f2f5f9;
+}
+
+.file-upload-label:hover {
+    color: #4da3ff;
+}
+
+.selected-file-name {
+    flex: 1;
+
+    color: rgba(255,255,255,0.7);   /* same tone as global search text */
+    font-size: 14px;
+    font-weight: 500;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 12px;
+}
+
+#pptUpload {
+    display: none;
+}
+
+
+/* =========================
+   CUSTOM FILE UPLOAD
+========================= */
+
+.custom-file-upload {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    width: 300px;
+    height: 30px;
+
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+
+    padding: 0 10px;
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+/* Actual button */
+.choose-file-btn {
+    background: white;
+    color: #1d3454;
+    border: none;
+
+    height: 34px;          /* fix here */
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+.choose-file-btn:hover {
+    background: #f5f7fa;
+}
+
+/* File name text */
+.file-name-text {
+    flex: 1;
+
+    color: rgba(255,255,255,0.7);   /* matches global search text */
+    font-size: 14px;
+    font-weight: 500;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+/* Hide actual browser file input */
+#pptUpload {
+    display: none;
+}

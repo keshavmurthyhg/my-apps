@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/converter.css') }}">
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-content">
+
+    <!-- Top Section -->
+    <div class="sidebar-top-section">
+
+        <div class="sidebar-top-actions">
+            <button class="clear-btn" onclick="clearConverterWorkspace()">
+                Clear Workspace
+            </button>
+        </div>
+
+        <!-- Remove Filters completely -->
+        
+        <!-- Downloads -->
+        <div class="sidebar-accordion active">
+            <div class="accordion-header"
+                 onclick="toggleSidebarSection(this)">
+                <span>Actions</span>
+                <span>▼</span>
+            </div>
+
+            <div class="accordion-body">
+                <div class="converter-actions">
+
+                    <!-- Hidden initially -->
+                    <button
+                        id="convertBtn"
+                        onclick="convertPPTSlides()"
+                        class="sidebar-action-btn hidden"
+                    >
+                        Convert PPT
+                    </button>
+
+                    <!-- Hidden initially -->
+                    <button
+                        id="generateBtn"
+                        onclick="generateDocument()"
+                        class="sidebar-action-btn hidden"
+                    >
+                        Generate Combined Report
+                    </button>
+
+                    <!-- Hidden initially -->
+                    <button
+                        id="downloadBtn"
+                        onclick="downloadConvertedDoc()"
+                        class="sidebar-action-btn hidden"
+                    >
+                        Download Final Report
+                    </button>
+
+                </div>
+                              
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bottom -->
+    <div class="sidebar-bottom-section">
+        <div class="status-panel">
+            <h4>Processing Status</h4>
+
+            <div class="progress-wrapper hidden"
+                 id="progressWrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill"
+                         id="progressFill"></div>
+                </div>
+
+                <div class="progress-text"
+                     id="progressText">
+                </div>
+            </div>
+
+            <div class="status-message"
+                 id="statusMessage">
+                Ready
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <p>Conversions Today: 12</p>
+            <p>Pending: 2</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Top Nav -->
+<div class="top-nav-bar">
+    <div class="top-nav-left">
+        <button class="top-home-btn" onclick="goHome()">
+            🏠 Home
+        </button>
+    </div>
+
+    <div class="top-nav-center">
+        <div class="module-title-pill">
+            Converter - PPT to DOC
+        </div>
+    </div>
+
+    <div class="top-nav-right">
+        <button class="help-btn">?</button>
+    </div>
+</div>
+
+
+<!-- Toolbar -->
+<div class="toolbar-row">
+
+    <div class="toolbar-left-section">
+        <div class="custom-file-upload">
+            <button 
+                type="button"
+                class="choose-file-btn"
+                onclick="document.getElementById('pptUpload').click()"
+            >
+                Choose File
+            </button>
+
+            <span id="selectedFileName" class="file-name-text">
+                No file chosen
+            </span>
+            <input
+                type="file"
+                id="pptUpload"
+                accept=".ppt,.pptx"
+                onchange="updateSelectedFileName(this)"
+                hidden
+            >
+        </div>
+
+        <button onclick="loadPPTPreview()">
+            Preview
+        </button>
+    </div>
+
+    <div class="toolbar-right-section">
+        <input
+            type="text"
+            placeholder="Global Search (Later)"
+            disabled
+        >
+    </div>
+</div>
+
+
+<!-- Main Content -->
+<div class="scrollable-report-content">
+
+    <!-- Preview -->
+    <div class="card">
+        <h3>Preview</h3>
+
+        <div id="previewContainer">
+            Preview will appear here
+        </div>
+    </div>
+
+    
+
+</div>
+
+<script src="{{ url_for('static', filename='js/converter.js') }}"></script>
+
+{% endblock %}

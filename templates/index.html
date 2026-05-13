@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+
+<!-- Empty sidebar for home page -->
+<div class="sidebar-content">
+    <!-- intentionally empty -->
+</div>
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ========================= -->
+<!-- TOP NAVIGATION BAR -->
+<!-- ========================= -->
+<div class="top-nav-bar">
+
+    <div class="top-nav-left">
+        <button class="top-home-btn">
+            🏠 Home
+        </button>
+    </div>
+
+    <div class="top-nav-center">
+        <div class="module-title-pill">
+            Ops Platform Dashboard
+        </div>
+    </div>
+
+    <div class="top-nav-right">
+        <button class="help-btn">?</button>
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- HOME DASHBOARD CONTENT
+========================= -->
+<div class="scrollable-report-content">
+
+    <!-- Welcome Card -->
+    <div class="card">
+        <h2>Welcome to Ops Platform</h2>
+        <p>
+            Select a module below to continue.
+        </p>
+    </div>
+
+
+    <!-- Module Grid -->
+    <div class="home-module-grid">
+
+        <a href="/report" class="home-module-card">
+            <h3>RCA Report Generator</h3>
+            <p>Create RCA reports with preview/edit/download support</p>
+        </a>
+
+        <a href="/bulk" class="home-module-card">
+            <h3>Bulk Generator</h3>
+            <p>Generate reports in bulk with ZIP exports</p>
+        </a>
+
+        <a href="/converter" class="home-module-card">
+            <h3>Document Converter</h3>
+            <p>Convert PPT/PDF/Word files</p>
+        </a>
+
+        <a href="/compare" class="home-module-card">
+            <h3>Document Compare</h3>
+            <p>Compare old/new documents and highlight differences</p>
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
