@@ -44,12 +44,10 @@ function completeProgress(message) {
         .getElementById("progressFill")
         .style.width = "100%";
 
-    // Only show final message once
     document
         .getElementById("progressText")
         .innerText = message;
 
-    // Keep status generic
     document
         .getElementById("statusMessage")
         .innerText = "Completed";
@@ -81,6 +79,7 @@ function resetProgress() {
 
 async function loadPPTPreview() {
     log("Preview started");
+
     const fileInput = document.getElementById("pptUpload");
 
     if (!fileInput.files.length) {
@@ -93,40 +92,99 @@ async function loadPPTPreview() {
     formData.append("ppt_file", fileInput.files[0]);
 
     showProgress("Reading PPT...");
-    updateProgress(40, "Extracting incident details...");
+    updateProgress(
+        40,
+        "Extracting incident details..."
+    );
 
     try {
-        const response = await fetch("/converter/preview", {
-            method: "POST",
-            body: formData
-        });
+        const response = await fetch(
+            "/converter/preview",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
 
         const data = await response.json();
 
         if (!response.ok || data.error) {
-            throw new Error(data.error || "Preview failed");
+            throw new Error(
+                data.error || "Preview failed"
+            );
         }
 
-        document.getElementById("previewContainer").innerHTML =
+        const previewContainer =
+            document.getElementById(
+                "previewContainer"
+            );
+
+        previewContainer.innerHTML =
             data.preview_html;
 
-        completeProgress("Preview loaded successfully");
+        /* -------------------------
+        Slide image preview
+        ------------------------- */
 
-        // Show Convert button after preview
-        document.getElementById("convertBtn")
+        const slidePreviewContainer =
+            document.getElementById(
+                "slidePreviewContainer"
+            );
+
+        if (
+            data.slide_images &&
+            data.slide_images.length > 0
+        ) {
+            let imageHtml = "";
+
+            data.slide_images.forEach(img => {
+                imageHtml += `
+                    <div class="ppt-preview-card">
+                        <img 
+                            src="/converter/slide-preview/${img.filename}"
+                            alt="Slide Preview"
+                            class="slide-preview-image"
+                        >
+                    </div>
+                `;
+            });
+
+            slidePreviewContainer.innerHTML =
+                imageHtml;
+        }
+        else {
+            slidePreviewContainer.innerHTML = `
+                <p class="preview-placeholder">
+                    No slide images found in PPT
+                </p>
+            `;
+        }
+
+        completeProgress(
+            "Preview loaded successfully"
+        );
+
+        /* show convert button */
+        document
+            .getElementById("convertBtn")
             .classList.remove("hidden");
 
-        // Keep next steps hidden
-        document.getElementById("generateBtn")
+        /* keep next buttons hidden */
+        document
+            .getElementById("generateBtn")
             .classList.add("hidden");
 
-        document.getElementById("downloadBtn")
+        document
+            .getElementById("downloadBtn")
             .classList.add("hidden");
 
     } catch (error) {
         console.error(error);
+
         log("Preview failed");
-        document.getElementById("statusMessage")
+
+        document
+            .getElementById("statusMessage")
             .innerText = "Preview failed";
     }
 }
@@ -138,52 +196,112 @@ async function loadPPTPreview() {
 
 async function convertPPTSlides() {
     log("PPT conversion started");
-    
-    const fileInput = document.getElementById("pptUpload");
+
+    const fileInput =
+        document.getElementById("pptUpload");
 
     if (!fileInput.files.length) {
-        document.getElementById("statusMessage")
+        document
+            .getElementById("statusMessage")
             .innerText = "Upload PPT first";
         return;
     }
 
     const formData = new FormData();
-    formData.append("ppt_file", fileInput.files[0]);
+    formData.append(
+        "ppt_file",
+        fileInput.files[0]
+    );
 
     showProgress("Converting slides...");
-    updateProgress(50, "Extracting PPT slides...");
+    updateProgress(
+        50,
+        "Extracting PPT slides..."
+    );
 
     try {
-        const response = await fetch("/converter/convert", {
-            method: "POST",
-            body: formData
-        });
+        const response = await fetch(
+            "/converter/convert",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
 
         const data = await response.json();
 
         if (!response.ok || data.error) {
-            throw new Error(data.error || "Conversion failed");
+            throw new Error(
+                data.error ||
+                "Conversion failed"
+            );
         }
 
         pptConverted = true;
 
-        document.getElementById("generateBtn")
+        /* -----------------------------
+           FIX: render converted slides
+        ----------------------------- */
+        const slidePreviewContainer =
+            document.getElementById(
+                "slidePreviewContainer"
+            );
+
+        if (
+            data.slide_images &&
+            data.slide_images.length > 0
+        ) {
+            let imageHtml = `
+                <div class="ppt-preview-grid">
+            `;
+
+            data.slide_images.forEach(img => {
+                imageHtml += `
+                    <div class="ppt-preview-card">
+                        <img 
+                            src="/converter/slide-preview/${img.filename}"
+                            alt="Slide Preview"
+                            class="slide-preview-image"
+                        >
+                    </div>
+                `;
+            });
+
+            imageHtml += `</div>`;
+
+            slidePreviewContainer.innerHTML =
+                imageHtml;
+        } else {
+            slidePreviewContainer.innerHTML = `
+                <p class="preview-placeholder">
+                    No converted slide images found
+                </p>
+            `;
+        }
+
+        document
+            .getElementById("generateBtn")
             .classList.remove("hidden");
 
-        // Hide download until generation completes
-        document.getElementById("downloadBtn")
+        document
+            .getElementById("downloadBtn")
             .classList.add("hidden");
-        
-        completeProgress("PPT conversion completed");
+
+        completeProgress(
+            "PPT conversion completed"
+        );
 
     } catch (error) {
         console.error(error);
+
         log("Conversion failed");
-        document.getElementById("statusMessage")
-            .innerText = "PPT conversion failed";
+
+        document
+            .getElementById("statusMessage")
+            .innerText =
+            "PPT conversion failed";
     }
 }
-
 
 /* ==========================
    GENERATE DOCUMENT
@@ -191,55 +309,88 @@ async function convertPPTSlides() {
 
 async function generateDocument() {
     log("Document generation started");
+
     if (!pptConverted) {
-        document.getElementById("statusMessage")
-            .innerText = "Convert PPT first";
+        document
+            .getElementById("statusMessage")
+            .innerText =
+            "Convert PPT first";
         return;
     }
 
-    const fileInput = document.getElementById("pptUpload");
+    const fileInput =
+        document.getElementById(
+            "pptUpload"
+        );
 
     if (!fileInput.files.length) {
-        document.getElementById("statusMessage")
-            .innerText = "Upload PPT first";
+        document
+            .getElementById("statusMessage")
+            .innerText =
+            "Upload PPT first";
         return;
     }
 
     const formData = new FormData();
-    formData.append("ppt_file", fileInput.files[0]);
+    formData.append(
+        "ppt_file",
+        fileInput.files[0]
+    );
 
-    showProgress("Generating report...");
-    updateProgress(80, "Creating DOC file...");
+    showProgress(
+        "Generating report..."
+    );
+
+    updateProgress(
+        80,
+        "Creating DOC file..."
+    );
 
     try {
-        const response = await fetch("/converter/generate", {
-            method: "POST",
-            body: formData
-        });
+        const response = await fetch(
+            "/converter/generate",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
 
         const data = await response.json();
 
         if (!response.ok || data.error) {
-            throw new Error(data.error || "Generation failed");
+            throw new Error(
+                data.error ||
+                "Generation failed"
+            );
         }
 
-        generatedFileName = data.filename;
+        generatedFileName =
+            data.filename;
 
-        document.getElementById("downloadBtn")
+        document
+            .getElementById("downloadBtn")
             .classList.remove("hidden");
 
         log(
             "Document generated: " +
             generatedFileName
         );
-        
-        completeProgress("Document generated successfully");
+
+        completeProgress(
+            "Document generated successfully"
+        );
 
     } catch (error) {
         console.error(error);
-        log("Document generation failed");
-        document.getElementById("statusMessage")
-            .innerText = "Document generation failed";
+
+        log(
+            "Document generation failed"
+        );
+
+        document
+            .getElementById("statusMessage")
+            .innerText =
+            "Document generation failed";
     }
 }
 
@@ -251,11 +402,14 @@ async function generateDocument() {
 function downloadConvertedDoc() {
     log(
         "Downloading file: " +
-        generatedFileName);
-    
+        generatedFileName
+    );
+
     if (!generatedFileName) {
-        document.getElementById("statusMessage")
-            .innerText = "Generate document first";
+        document
+            .getElementById("statusMessage")
+            .innerText =
+            "Generate document first";
         return;
     }
 
@@ -270,72 +424,96 @@ function downloadConvertedDoc() {
 
 function clearConverterWorkspace() {
     log("Workspace cleared");
-    document.getElementById("pptUpload").value = "";
 
-    document.getElementById("previewContainer").innerHTML =
-        "Preview will appear here";
+    document
+        .getElementById("pptUpload")
+        .value = "";
+
+    /* Reset incident preview */
+    document
+        .getElementById(
+            "previewContainer"
+        ).innerHTML =
+    `
+    <p class="preview-placeholder">
+        Preview will appear here
+    </p>
+    `;
+
+    /* Reset slide preview */
+    document
+        .getElementById(
+            "slidePreviewContainer"
+        ).innerHTML =
+    `
+    <p class="preview-placeholder">
+        Converted slide images will appear here after conversion
+    </p>
+    `;
 
     generatedFileName = null;
     pptConverted = false;
 
-    // Hide all action buttons initially
-    document.getElementById("convertBtn")
+    document
+        .getElementById("convertBtn")
         .classList.add("hidden");
 
-    document.getElementById("generateBtn")
+    document
+        .getElementById("generateBtn")
         .classList.add("hidden");
 
-    document.getElementById("downloadBtn")
+    document
+        .getElementById("downloadBtn")
         .classList.add("hidden");
 
     resetProgress();
 }
 
+
 /* ==========================
    SIDEBAR ACCORDION
 ========================== */
 
-function toggleSidebarSection(header) {
-    header.parentElement.classList.toggle("active");
+function toggleSidebarSection(
+    header
+) {
+    header.parentElement
+        .classList.toggle(
+            "active"
+        );
 }
 
 
 /* ==========================
-   Hide buttons on initial page load
+   FILE NAME DISPLAY
 ========================== */
-window.onload = function () {
-    document.getElementById("convertBtn")
-        .classList.add("hidden");
 
-    document.getElementById("generateBtn")
-        .classList.add("hidden");
+function updateSelectedFileName(
+    input
+) {
+    const fileNameText =
+        document.getElementById(
+            "selectedFileName"
+        );
 
-    document.getElementById("downloadBtn")
-        .classList.add("hidden");
-};
-
-
-/* =========================
-   custom upload wrapper styled
-========================= */
-
-function updateSelectedFileName(input) {
-    const fileNameText = document.getElementById("selectedFileName");
-
-    if (input.files && input.files.length > 0) {
-        const file = input.files[0];
+    if (
+        input.files &&
+        input.files.length > 0
+    ) {
+        const file =
+            input.files[0];
 
         log(
             "File selected: " +
-            input.files[0].name
+            file.name
         );
 
-        fileNameText.textContent = file.name;
-
-        console.log("Selected file:", file.name);
-    } 
+        fileNameText.textContent =
+            file.name;
+    }
     else {
-        fileNameText.textContent = "No file chosen";
+        fileNameText.textContent =
+            "No file chosen";
     }
 }
 
@@ -346,5 +524,25 @@ function updateSelectedFileName(input) {
 
 function goHome() {
     log("Navigating home");
+
     window.location.href = "/";
 }
+
+
+/* ==========================
+   INITIAL BUTTON STATE
+========================== */
+
+window.onload = function () {
+    document
+        .getElementById("convertBtn")
+        .classList.add("hidden");
+
+    document
+        .getElementById("generateBtn")
+        .classList.add("hidden");
+
+    document
+        .getElementById("downloadBtn")
+        .classList.add("hidden");
+};

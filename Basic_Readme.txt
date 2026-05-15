@@ -101,6 +101,85 @@ pip install python-docx
 
 Backup or sync with GITHUB
 """"""""""""""""""""""""""
+1) Open terminal / command prompt
+
+Navigate to your project folder:
+
+cd path/to/my-app
+
+Example:
+
+cd C:\Users\YourName\Projects\my-app
+
+or on Mac/Linux:
+
+cd ~/Projects/my-app
+2) Initialize Git (if not already initialized)
+git init
+
+This creates a local Git repository.
+
+3) Check files
+git status
+
+You’ll see all untracked files.
+
+4) Add a .gitignore file (important)
+
+Avoid pushing unnecessary files like virtual environments, build folders, secrets, etc.
+
+Example for Python app:
+
+venv/
+__pycache__/
+.env
+*.pyc
+
+Example for Node/React app:
+
+node_modules/
+.env
+dist/
+build/
+
+Create it:
+
+touch .gitignore
+
+(Windows users can create manually in Notepad.)
+
+5) Add files to Git
+git add .
+6) Commit files
+git commit -m "Initial commit"
+7) Create a new repository on GitHub
+
+Go to:
+
+GitHub → New Repository
+
+Give repo name (e.g. my-app)
+Keep it public/private as needed
+Don’t add README/gitignore/license if your local project already has files
+
+Click Create repository
+
+8) Connect local project to GitHub repo
+
+Copy the repo URL from GitHub and run:
+
+git remote add origin https://github.com/yourusername/my-app.git
+9) Push code to GitHub
+
+For newer Git versions:
+
+git branch -M main
+git push -u origin main
+
+If your branch is master:
+
+git push -u origin master
+
 
 Typical workflow after you change code locally:
 #See what changed.

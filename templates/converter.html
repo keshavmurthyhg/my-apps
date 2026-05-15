@@ -5,16 +5,21 @@
       href="{{ url_for('static', filename='css/converter.css') }}">
 {% endblock %}
 
+
 {% block page_title %}
 Converter
 {% endblock %}
+
 
 {% block module_title %}
 Converter - PPT to DOC
 {% endblock %}
 
 
-<!-- FIXED CLEAR BUTTON -->
+
+<!-- =========================
+     FIXED CLEAR BUTTON
+========================= -->
 {% block sidebar_actions %}
 <button class="clear-btn"
         onclick="clearConverterWorkspace()">
@@ -23,13 +28,17 @@ Converter - PPT to DOC
 {% endblock %}
 
 
-<!-- SCROLLABLE SIDEBAR -->
+
+<!-- =========================
+     SCROLLABLE SIDEBAR ACTIONS
+========================= -->
 {% block sidebar %}
 
 <div class="sidebar-card">
     <div class="card-title">Actions</div>
 
     <div class="actions-buttons">
+
         <button id="convertBtn"
                 onclick="convertPPTSlides()">
             Convert PPT
@@ -44,39 +53,59 @@ Converter - PPT to DOC
                 onclick="downloadConvertedDoc()">
             Download Report
         </button>
+
     </div>
 </div>
 
 {% endblock %}
 
 
-<!-- FIXED PROCESSING -->
+
+<!-- =========================
+     PROCESSING STATUS
+========================= -->
 {% block processing_status %}
 <div class="sidebar-card">
-    <div class="card-title">Processing Status</div>
 
-    <div id="statusMessage" class="status-box ready-status">
+    <div class="card-title">
+        Processing Status
+    </div>
+
+    <div id="statusMessage"
+         class="status-box ready-status">
         Ready
     </div>
 
-    <!-- Progress bar required by existing JS -->
-    <div id="progressWrapper" class="progress-wrapper hidden">
+    <!-- Required by JS -->
+    <div id="progressWrapper"
+         class="progress-wrapper hidden">
+
         <div class="progress-bar">
-            <div id="progressFill" class="progress-fill"></div>
+            <div id="progressFill"
+                 class="progress-fill"></div>
         </div>
 
-        <div id="progressText" class="progress-text"></div>
+        <div id="progressText"
+             class="progress-text"></div>
     </div>
+
 </div>
 {% endblock %}
 
 
-<!-- FIXED KPI -->
+
+<!-- =========================
+     KPI SECTION
+========================= -->
 {% block sidebar_kpi %}
 <div class="sidebar-card">
-    <div class="card-title">KPI</div>
+
+    <div class="card-title">
+        KPI
+    </div>
 
     <div class="kpi-grid">
+
         <div class="kpi-box">
             <span>Today</span>
             <h3>12</h3>
@@ -86,12 +115,17 @@ Converter - PPT to DOC
             <span>Pending</span>
             <h3>2</h3>
         </div>
+
     </div>
+
 </div>
 {% endblock %}
 
 
-<!-- TOOLBAR -->
+
+<!-- =========================
+     TOOLBAR
+========================= -->
 {% block toolbar %}
 
 <div class="toolbar-left-section">
@@ -121,12 +155,17 @@ Converter - PPT to DOC
 {% endblock %}
 
 
-<!-- CONTENT -->
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
 {% block content %}
+
 <div class="converter-preview-container">
 
+    <!-- Incident Preview -->
     <div class="card">
-        <h2>Preview</h2>
+        <h2>Incident Preview</h2>
 
         <div id="previewContainer">
             <p class="preview-placeholder">
@@ -135,10 +174,28 @@ Converter - PPT to DOC
         </div>
     </div>
 
+
+    <!-- Converted PPT Slides Preview -->
+    <div class="card slide-preview-section">
+        <h2>Converted PPT Slides Preview</h2>
+
+        <div id="slidePreviewContainer"
+             class="slide-preview-grid">
+
+            <p class="preview-placeholder">
+                Converted slide images will appear here after conversion
+            </p>
+
+        </div>
+    </div>
+
 </div>
+
 {% endblock %}
 
 
+
 {% block module_js %}
-<script src="{{ url_for('static', filename='js/converter.js') }}"></script>
+<script src="{{ url_for('static',
+filename='js/converter.js') }}"></script>
 {% endblock %}
