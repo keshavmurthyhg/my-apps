@@ -1,0 +1,144 @@
+{% extends "common/layout.html" %}
+
+{% block module_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/converter.css') }}">
+{% endblock %}
+
+{% block page_title %}
+Converter
+{% endblock %}
+
+{% block module_title %}
+Converter - PPT to DOC
+{% endblock %}
+
+
+<!-- FIXED CLEAR BUTTON -->
+{% block sidebar_actions %}
+<button class="clear-btn"
+        onclick="clearConverterWorkspace()">
+    Clear Workspace
+</button>
+{% endblock %}
+
+
+<!-- SCROLLABLE SIDEBAR -->
+{% block sidebar %}
+
+<div class="sidebar-card">
+    <div class="card-title">Actions</div>
+
+    <div class="actions-buttons">
+        <button id="convertBtn"
+                onclick="convertPPTSlides()">
+            Convert PPT
+        </button>
+
+        <button id="generateBtn"
+                onclick="generateDocument()">
+            Generate Report
+        </button>
+
+        <button id="downloadBtn"
+                onclick="downloadConvertedDoc()">
+            Download Report
+        </button>
+    </div>
+</div>
+
+{% endblock %}
+
+
+<!-- FIXED PROCESSING -->
+{% block processing_status %}
+<div class="sidebar-card">
+    <div class="card-title">Processing Status</div>
+
+    <div id="statusMessage" class="status-box ready-status">
+        Ready
+    </div>
+
+    <!-- Progress bar required by existing JS -->
+    <div id="progressWrapper" class="progress-wrapper hidden">
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+
+        <div id="progressText" class="progress-text"></div>
+    </div>
+</div>
+{% endblock %}
+
+
+<!-- FIXED KPI -->
+{% block sidebar_kpi %}
+<div class="sidebar-card">
+    <div class="card-title">KPI</div>
+
+    <div class="kpi-grid">
+        <div class="kpi-box">
+            <span>Today</span>
+            <h3>12</h3>
+        </div>
+
+        <div class="kpi-box">
+            <span>Pending</span>
+            <h3>2</h3>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+<!-- TOOLBAR -->
+{% block toolbar %}
+
+<div class="toolbar-left-section">
+
+    <input type="file"
+           id="pptUpload"
+           accept=".ppt,.pptx">
+
+    <button id="previewBtn"
+            class="primary-btn"
+            onclick="loadPPTPreview()">
+        Preview
+    </button>
+
+</div>
+
+
+<div class="toolbar-right-section">
+
+    <input type="text"
+           class="toolbar-search-input"
+           placeholder="Global Search (Later)"
+           readonly>
+
+</div>
+
+{% endblock %}
+
+
+<!-- CONTENT -->
+{% block content %}
+<div class="converter-preview-container">
+
+    <div class="card">
+        <h2>Preview</h2>
+
+        <div id="previewContainer">
+            <p class="preview-placeholder">
+                Preview will appear here
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block module_js %}
+<script src="{{ url_for('static', filename='js/converter.js') }}"></script>
+{% endblock %}
