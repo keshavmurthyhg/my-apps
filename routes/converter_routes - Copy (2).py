@@ -22,9 +22,7 @@ from modules.converter.ppt_metadata import (
 from modules.report.services.preview_service import (
     get_preview_data
 )
-from modules.common.ui.preview_ui import (
-    render_preview_html
-)
+
 
 converter_bp = Blueprint(
     "converter",
@@ -173,9 +171,22 @@ def preview_converter():
         # -----------------------------
         # preview html
         # -----------------------------
-        preview_html = render_preview_html(
-            incident_data
-        )
+        preview_html = f"""
+        <table class='preview-table'>
+            <tr>
+                <td><b>Incident</b></td>
+                <td>{incident_number}</td>
+            </tr>
+            <tr>
+                <td><b>Priority</b></td>
+                <td>{incident_data.get('priority', 'N/A')}</td>
+            </tr>
+            <tr>
+                <td><b>Description</b></td>
+                <td>{incident_data.get('description', 'N/A')}</td>
+            </tr>
+        </table>
+        """
 
         # -----------------------------
         # slide preview generation
@@ -369,30 +380,9 @@ def generate_converter():
                 ppt_path
             )
 
-
-        metadata = extract_slide1_metadata(
-            ppt_path
-        )
-
-        incident_number = metadata.get(
-            "incident"
-        )
-
-        if not incident_number:
-            incident_number = (
-                extract_full_incident_from_filename(
-                    file.filename
-                )
-            )
-
-        incident_data = get_preview_data(
-            incident_number
-        )
-
         output_file = convert_ppt(
             ppt_path,
-            OUTPUT_FOLDER,
-            incident_data
+            OUTPUT_FOLDER
         )
 
         return jsonify({

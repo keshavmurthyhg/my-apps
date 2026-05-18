@@ -1,104 +1,71 @@
-{% extends "common/layout.html" %}
+{% extends "main.html" %}
 
-{% block module_css %}
+{% block page_css %}
 <link rel="stylesheet"
       href="{{ url_for('static', filename='css/converter.css') }}">
 {% endblock %}
 
 
-{% block page_title %}
-Converter
+<!-- =========================================
+     DOCK ICONS
+========================================= -->
+{% block dock_icons %}
+
+<div class="dock-item active-dock"
+     title="Converter"
+     onclick="showConverterSection('converter')">
+    📄
+</div>
+
+<div class="dock-item"
+     title="KPI"
+     onclick="showConverterSection('kpi')">
+    📊
+</div>
+
 {% endblock %}
 
 
-{% block module_title %}
-Converter - PPT to DOC
-{% endblock %}
-
-
-
-<!-- =========================
-     FIXED CLEAR BUTTON
-========================= -->
-{% block sidebar_actions %}
-<button class="clear-btn"
-        onclick="clearConverterWorkspace()">
-    Clear Workspace
-</button>
-{% endblock %}
-
-
-
-<!-- =========================
-     SCROLLABLE SIDEBAR ACTIONS
-========================= -->
+<!-- =========================================
+     SIDEBAR CONTENT
+========================================= -->
 {% block sidebar %}
 
-<div class="sidebar-card">
-    <div class="card-title">Actions</div>
+<!-- CONVERTER SECTION -->
+<div id="converter-section"
+     class="dock-section active-section">
 
-    <div class="actions-buttons">
+    <div class="download-panel">
 
-        <button id="convertBtn"
-                onclick="convertPPTSlides()">
-            Convert PPT
-        </button>
+        <h3>Converter Actions</h3>
 
-        <button id="generateBtn"
-                onclick="generateDocument()">
-            Generate Report
-        </button>
+        <div class="actions-buttons">
 
-        <button id="downloadBtn"
-                onclick="downloadConvertedDoc()">
-            Download Report
-        </button>
+            <button id="convertBtn"
+                    onclick="convertPPTSlides()">
+                Convert PPT
+            </button>
 
-    </div>
-</div>
+            <button id="generateBtn"
+                    onclick="generateDocument()">
+                Generate Report
+            </button>
 
-{% endblock %}
+            <button id="downloadBtn"
+                    onclick="downloadConvertedDoc()">
+                Download Report
+            </button>
 
-
-
-<!-- =========================
-     PROCESSING STATUS
-========================= -->
-{% block processing_status %}
-<div class="sidebar-card">
-
-    <div class="card-title">
-        Processing Status
-    </div>
-
-    <div id="statusMessage"
-         class="status-box ready-status">
-        Ready
-    </div>
-
-    <!-- Required by JS -->
-    <div id="progressWrapper"
-         class="progress-wrapper hidden">
-
-        <div class="progress-bar">
-            <div id="progressFill"
-                 class="progress-fill"></div>
         </div>
 
-        <div id="progressText"
-             class="progress-text"></div>
     </div>
 
 </div>
-{% endblock %}
 
 
-
-<!-- =========================
-     KPI SECTION
-========================= -->
-{% block sidebar_kpi %}
-<div class="sidebar-card">
+<!-- KPI SECTION -->
+<div class="dock-section"
+     id="kpi-section">
 
     <div class="card-title">
         KPI
@@ -108,85 +75,133 @@ Converter - PPT to DOC
 
         <div class="kpi-box">
             <span>Today</span>
-            <h3>12</h3>
+            <strong>12</strong>
         </div>
 
         <div class="kpi-box">
             <span>Pending</span>
-            <h3>2</h3>
+            <strong>2</strong>
         </div>
 
     </div>
 
 </div>
+
 {% endblock %}
 
 
+<!-- =========================================
+     SIDEBAR TOOLBAR
+========================================= -->
+{% block sidebar_toolbar %}
 
-<!-- =========================
-     TOOLBAR
-========================= -->
-{% block toolbar %}
+<div class="sidebar-toolbar">
 
-<div class="toolbar-left-section">
+    <button onclick="clearWorkspace()">
+        Clear Workspace
+    </button>
 
-    <input type="file"
-           id="pptUpload"
-           accept=".ppt,.pptx">
-
-    <button id="previewBtn"
-            class="primary-btn"
-            onclick="loadPPTPreview()">
-        Preview
+    <button onclick="alert('Filters coming soon')">
+        Apply Filters
     </button>
 
 </div>
 
+{% endblock %}
 
-<div class="toolbar-right-section">
 
-    <input type="text"
-           class="toolbar-search-input"
-           placeholder="Global Search (Later)"
-           readonly>
+<!-- =========================================
+     TOP TITLE
+========================================= -->
+{% block top_center %}
 
+<div class="module-title-pill">
+    Converter - PPT to DOC
 </div>
 
 {% endblock %}
 
 
+<!-- =========================================
+     TOOLBAR LEFT
+========================================= -->
+{% block toolbar_left %}
 
-<!-- =========================
+<div class="ppt-upload-wrapper">
+
+    <label for="pptUpload"
+           class="ppt-upload-btn">
+        Choose File
+    </label>
+
+    <input type="file"
+           id="pptUpload"
+           accept=".ppt,.pptx"
+           onchange="updatePPTFileName()">
+
+    <span id="pptFileName"
+          class="ppt-file-name">
+        No file selected
+    </span>
+
+</div>
+
+<button id="previewBtn"
+        class="primary-btn"
+        onclick="loadPPTPreview()">
+    Preview
+</button>
+
+{% endblock %}
+
+
+<!-- =========================================
+     TOOLBAR RIGHT
+========================================= -->
+{% block toolbar_right %}
+
+<input
+    type="text"
+    class="toolbar-search-input"
+    placeholder="Global Search (Later)"
+    disabled>
+
+{% endblock %}
+
+
+<!-- =========================================
      MAIN CONTENT
-========================= -->
+========================================= -->
 {% block content %}
 
-<div class="converter-preview-container">
+<!-- Incident Preview -->
+<div class="card preview-card">
 
-    <!-- Incident Preview -->
-    <div class="card">
-        <h2>Incident Preview</h2>
+    <h3>Incident Preview</h3>
 
-        <div id="previewContainer">
-            <p class="preview-placeholder">
-                Preview will appear here
-            </p>
-        </div>
+    <div id="previewContainer">
+
+        <p class="preview-placeholder">
+            Preview will appear here
+        </p>
+
     </div>
 
+</div>
 
-    <!-- Converted PPT Slides Preview -->
-    <div class="card slide-preview-section">
-        <h2>Converted PPT Slides Preview</h2>
 
-        <div id="slidePreviewContainer"
-             class="slide-preview-grid">
+<!-- Slide Preview -->
+<div class="card preview-card">
 
-            <p class="preview-placeholder">
-                Converted slide images will appear here after conversion
-            </p>
+    <h3>Converted PPT Slides Preview</h3>
 
-        </div>
+    <div id="slidePreviewContainer"
+         class="slide-preview-grid">
+
+        <p class="preview-placeholder">
+            Converted slide images will appear here after conversion
+        </p>
+
     </div>
 
 </div>
@@ -194,8 +209,42 @@ Converter - PPT to DOC
 {% endblock %}
 
 
+<!-- =========================================
+     MODULE STATUS
+========================================= -->
+{% block module_status %}
 
-{% block module_js %}
+<div class="report-status-meta">
+
+    <div class="status-row">
+        <span class="status-label">Status:</span>
+        <span id="statusMessage">Ready</span>
+    </div>
+
+    <div class="status-row">
+        <span class="status-label">Last Action:</span>
+        <span id="progressText">Waiting</span>
+    </div>
+
+</div>
+
+
+<div id="progressWrapper"
+     class="progress-wrapper hidden">
+
+    <div class="progress-bar">
+
+        <div id="progressFill"
+             class="progress-fill"></div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block page_js %}
 <script src="{{ url_for('static',
 filename='js/converter.js') }}"></script>
 {% endblock %}

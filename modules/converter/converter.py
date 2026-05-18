@@ -5,7 +5,11 @@ from modules.common.logger import setup_logger
 logger = setup_logger("converter")
 
 
-def convert_ppt(ppt_path, output_folder):
+def convert_ppt(
+    ppt_path,
+    output_folder,
+    incident_data=None
+):
     """
     Only converts PPT -> DOCX
     Keep PDF generation separate
@@ -28,7 +32,8 @@ def convert_ppt(ppt_path, output_folder):
         logger.info("Calling ppt_to_word()")
         ppt_to_word(
             ppt_path,
-            docx_path
+            docx_path,
+            incident_data
         )
 
         logger.info(f"DOCX created successfully: {docx_path}")

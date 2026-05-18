@@ -27,10 +27,21 @@
             </div>
 
             <!-- Clear / Filter -->
+            {% block sidebar_toolbar %}
+
             <div class="sidebar-toolbar">
-                <button onclick="clearPreview()">Clear Workspace</button>
-                <button onclick="applyFilters()">Apply Filters</button>
+
+                <button onclick="clearWorkspace()">
+                    Clear Workspace
+                </button>
+
+                <button onclick="applyFilters()">
+                    Apply Filters
+                </button>
+
             </div>
+
+            {% endblock %}
 
             <!-- Dynamic Module Content -->
             <div class="sidebar-content-area">
