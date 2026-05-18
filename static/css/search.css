@@ -1,76 +1,104 @@
-/* =========================
-   SEARCH RESULTS CONTAINER
-========================= */
-.search-results-container {
-    background: white;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    overflow-x: auto;
-    margin-bottom: 15px;
+.results-summary-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
 }
 
+.results-count {
+    font-size: 22px;
+    font-weight: 700;
+    color: #172b46;
+}
 
-/* =========================
-   SEARCH TABLE
-========================= */
+.results-breakdown {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.search-results-container {
+    background: white;
+    border-radius: 12px;
+    overflow: auto;
+    height: calc(100vh - 230px);
+    border: 1px solid #e5e7eb;
+}
+
 #searchResultsTable {
     width: 100%;
     border-collapse: collapse;
-    min-width: 1100px;
+    min-width: 1400px;
+}
+
+#searchResultsTable thead {
+    position: sticky;
+    top: 0;
+    z-index: 5;
 }
 
 #searchResultsTable th {
     background: #f3f4f6;
     color: #172b46;
-    padding: 10px;
+    padding: 12px;
     font-size: 12px;
-    font-weight: 600;
     text-align: left;
-    border-bottom: 1px solid #e5e7eb;
     white-space: nowrap;
+    border-bottom: 1px solid #d1d5db;
 }
 
 #searchResultsTable td {
-    padding: 10px;
+    padding: 10px 12px;
     font-size: 12px;
-    color: #374151;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 1px solid #f1f5f9;
     white-space: nowrap;
+    color: #374151;
 }
 
 #searchResultsTable tr:hover {
     background: #f9fafb;
 }
 
+#searchResultsTable td:nth-child(3) {
+    max-width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-/* =========================
-   OPEN LINK
-========================= */
 #searchResultsTable a {
     color: #2563eb;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 #searchResultsTable a:hover {
     text-decoration: underline;
 }
 
-
-/* =========================
-   LAST REFRESH
-========================= */
-.last-refresh {
-    font-size: 12px;
-    color: #6b7280;
-    margin-top: 10px;
+.empty-search-message {
+    text-align: center;
+    padding: 50px;
+    color: #94a3b8;
+    font-size: 14px;
 }
 
+.last-refresh {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6b7280;
+}
 
-/* =========================
-   SIDEBAR RADIO GROUP
-========================= */
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.checkbox-grid label {
+    font-size: 13px;
+    color: white;
+}
+
 .radio-group {
     display: flex;
     flex-direction: column;
@@ -79,69 +107,242 @@
 }
 
 .radio-group label {
-    font-size: 12px;
+    font-size: 13px;
     color: white;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
-
-/* =========================
-   KPI GRID
-========================= */
-/* =========================
-   KPI GRID
-========================= */
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin-top: 10px;
 }
 
 .kpi-box {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 10px 8px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 12px;
     text-align: center;
-    min-height: 70px;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 .kpi-box span {
+    display: block;
     font-size: 11px;
     color: #cbd5e1;
     margin-bottom: 6px;
-    font-weight: 500;
 }
 
-.kpi-box h3 {
+.kpi-box strong {
+    font-size: 22px;
+    color: white;
+}
+
+.toolbar-select {
+    min-width: 70px;
+}
+
+/* =========================================
+   MODULE SECTION SWITCHING
+========================================= */
+
+.dock-section {
+    display: none;
+    width: 100%;
+}
+
+.active-section {
+    display: block;
+}
+
+.active-dock {
+    color: #4c7dff;
+}
+
+
+/* =========================================
+   SIDEBAR CARD
+========================================= */
+
+.sidebar-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+}
+
+
+/* =========================================
+   RESULTS AREA
+========================================= */
+
+.results-summary-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.results-count {
     font-size: 22px;
     font-weight: 700;
-    color: white;
-    line-height: 1;
+    color: #172b46;
+}
+
+.results-breakdown {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
 }
 
 
-/* =========================
-   SEARCH PAGINATION SELECTS
-========================= */
-.toolbar-select {
-    min-width: 55px;
+/* =========================================
+   TABLE CONTAINER
+========================================= */
+
+.search-results-container {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+
+    overflow: auto;
+
+    height: calc(100vh - 185px);
+
+    max-height: calc(100vh - 185px);
 }
 
 
-/* =========================
-   EMPTY TABLE MESSAGE (future use)
-========================= */
+/* =========================================
+   TABLE
+========================================= */
+
+#searchResultsTable {
+    width: 100%;
+    min-width: 1400px;
+    border-collapse: collapse;
+}
+
+#searchResultsTable thead {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+#searchResultsTable th {
+    background: #f3f4f6;
+    color: #172b46;
+    padding: 12px;
+    font-size: 12px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid #d1d5db;
+}
+
+#searchResultsTable td {
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #374151;
+    white-space: nowrap;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+#searchResultsTable tr:hover {
+    background: #f9fafb;
+}
+
+
+/* =========================================
+   DESCRIPTION COLUMN
+========================================= */
+
+#searchResultsTable td:nth-child(3) {
+    max-width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================
+   EMPTY MESSAGE
+========================================= */
+
 .empty-search-message {
     text-align: center;
-    padding: 40px;
-    color: #6b7280;
+    padding: 50px;
+    color: #94a3b8;
     font-size: 14px;
+}
+
+
+/* =========================================
+   CHECKBOX GRID
+========================================= */
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.checkbox-grid label {
+    font-size: 13px;
+    color: white;
+}
+
+
+/* =========================================
+   RADIO GROUP
+========================================= */
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.radio-group label {
+    font-size: 13px;
+    color: white;
+}
+
+
+/* =========================================
+   KPI GRID
+========================================= */
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.kpi-box {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+}
+
+.kpi-box span {
+    display: block;
+    font-size: 11px;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+}
+
+.kpi-box strong {
+    font-size: 22px;
+    color: white;
+}
+
+
+/* =========================================
+   LAST REFRESH
+========================================= */
+
+.last-refresh {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6b7280;
 }
