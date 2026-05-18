@@ -176,15 +176,6 @@
     gap: 2px;
 }
 
-.filter-half select,
-.filter-half input {
-    width: 100%;
-    max-width: 90px;
-    height: 30px;
-    font-size: 12px;
-}
-
-
 /* =========================================================
    BULK SIDEBAR LAYOUT
    Purpose:
@@ -198,37 +189,6 @@
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
-}
-
-
-/* =========================================================
-   TOP FIXED BUTTONS
-   Purpose:
-   Clear + Apply always visible
-========================================================= */
-
-.bulk-sidebar-fixed-top {
-    flex-shrink: 0;
-    padding: 3px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.top-action-row {
-    display: flex;
-    gap: 8px;
-}
-
-.sidebar-btn {
-    flex: 1;
-    background: #486a96;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    font-family: Arial, sans-serif;
 }
 
 
@@ -334,4 +294,285 @@
     .bulk-results-card {
         width: 100%;
     }
+}
+
+/* ==========================================
+   BULK TOOLBAR BUTTON
+   Match RCA toolbar styling
+========================================== */
+.toolbar-action-btn {
+    height: 34px;
+    min-width: 110px;
+    padding: 0 10px;
+
+    background: white;
+    color: #172b46;
+
+    border: none;
+    border-radius: 6px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar-action-btn:hover {
+    background: #f3f6fb;
+}
+
+/* ==========================================
+   DOCK SECTION VISIBILITY
+========================================== */
+
+.dock-section {
+    display: none;
+    width: 100%;
+    padding: 8px;
+}
+
+.dock-section.active-section {
+    display: block;
+}
+
+
+/* keep dock icons centered */
+.dock-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    cursor: pointer;
+}
+
+/* filter image sizing */
+.dock-item img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/* preserve shared active dock style */
+.active-dock {
+    background: rgba(255,255,255,0.12);
+    border-left: 3px solid #4da3ff;
+}
+
+/* ==========================================
+   DOWNLOAD BUTTON STYLING
+========================================== */
+
+.download-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.output-buttons button {
+    background: #304766;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 13px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.action-buttons button {
+    background: #1e4f8a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 13px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.action-buttons button:last-child {
+    background: #7a2f2f;
+}
+
+
+/* ==========================================
+   FILTER LABELS
+========================================== */
+
+.bulk-filter-label {
+    display: block;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.bulk-sub-label {
+    display: block;
+    color: white;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+
+/* ==========================================
+   FILTER DROPDOWNS
+========================================== */
+
+#bulk_priority_filter,
+#bulk_preset_date_filter,
+#bulk_year_filter {
+    width: 100%;
+    height: 42px;
+    background: #304766;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    appearance: none;
+}
+
+
+/* dropdown option visibility fix */
+#bulk_priority_filter option,
+#bulk_preset_date_filter option,
+#bulk_year_filter option {
+    color: black;
+}
+
+
+/* ==========================================
+   DATE INPUTS
+========================================== */
+
+.filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.filter-half {
+    flex: 1;
+    min-width: 0;
+}
+
+.filter-half input {
+    width: 100%;
+    height: 42px;
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 8px;
+    padding: 0 10px;
+    font-size: 12px;
+}
+
+/* -----------------------------------
+SECTION HEADERS
+----------------------------------- */
+
+.bulk-section-title {
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    margin-top: 8px;
+}
+
+.date-range-title {
+    margin-top: 20px;
+}
+
+.bulk-divider {
+    border: none;
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+    margin: 18px 0;
+}
+
+
+/* -----------------------------------
+STACK DATE FIELDS
+----------------------------------- */
+
+.filter-date-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.filter-date-stack input {
+    width: 100%;
+}
+
+
+/* remove old horizontal compression */
+.filter-row {
+    gap: 12px;
+}
+
+
+/* make sub labels visible */
+.bulk-sub-label {
+    color: white;
+    font-size: 13px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* ==========================================
+   MAIN DOCK HEADINGS
+========================================== */
+
+.bulk-main-heading {
+    color: white !important;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.bulk-sub-heading {
+    color: white !important;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.bulk-helper-text {
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 18px;
+}
+
+
+/* ==========================================
+   PROCESSING STATUS TEXT FIX
+========================================== */
+
+.processing-message,
+.progress-text,
+#statusMessage,
+#progressText {
+    color: white !important;
+}
+
+
+/* ==========================================
+   FILTER LABEL COLOR FIX
+========================================== */
+
+.bulk-filter-label,
+.bulk-sub-label,
+.sidebar-bottom-section label,
+.sidebar-bottom-section h4,
+.sidebar-bottom-section h3 {
+    color: white !important;
 }

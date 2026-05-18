@@ -1,70 +1,79 @@
-{% extends "base.html" %}
+{% extends "main.html" %}
 
 {% block page_css %}
 <link rel="stylesheet"
       href="{{ url_for('static', filename='css/bulk.css') }}">
 {% endblock %}
 
+{% block dock_icons %}
+
+<!-- Output Type -->
+<div class="dock-item active-dock"
+     onclick="showSidebarSection('download-section')">
+    ⚡
+</div>
+
+<!-- Filters -->
+<div class="dock-item"
+     onclick="showSidebarSection('filters-section')">
+    <img src="{{ url_for('static', filename='images/filter.png') }}"
+         alt="Filter">
+</div>
+
+<!-- Downloads -->
+<div class="dock-item"
+     onclick="showSidebarSection('downloads-section')">
+    ⬇
+</div>
+
+<!-- KPI -->
+<div class="dock-item"
+     onclick="showSidebarSection('kpi-section')">
+    📊
+</div>
+
+{% endblock %}
+
 {% block sidebar %}
 <div class="sidebar-content bulk-sidebar">
 
-    <!-- FIXED TOP ACTIONS -->
-    <div class="bulk-sidebar-fixed-top">
-        <div class="top-action-row">
-            <button onclick="clearBulkWorkspace()" class="sidebar-btn">
-                Clear Workspace
-            </button>
+    <!-- OUTPUT SELECTION -->
+    <div id="download-section"
+         class="dock-section active-section">
 
-            <button onclick="applyBulkFilters()" class="sidebar-btn">
-                Apply Filters
-            </button>
+        <div class="accordion-body">
+
+            <h4 class="bulk-section-title">
+                Select Output Type
+            </h4>
+
+            <div class="download-buttons output-buttons">
+                <button onclick="setBulkOutputType('pdf')">PDF</button>
+                <button onclick="setBulkOutputType('word')">Word</button>
+                <button onclick="setBulkOutputType('both')">Both</button>
+            </div>
+
         </div>
+        
+
     </div>
 
 
-    <!-- ONLY THIS PART SCROLLS -->
-    <div class="bulk-sidebar-scrollable">
+    <!-- FILTER SECTION -->
+    <div id="filters-section"
+         class="dock-section">
 
-        <!-- Download -->
         <div class="sidebar-accordion active">
-            <div class="accordion-header"
-                 onclick="toggleSidebarSection(this)">
-                <span>Download Options</span>
-                <span>▼</span>
-            </div>
-
+            
             <div class="accordion-body">
 
-                <p class="download-label">
-                    Select report output format
-                </p>
+                <h3 class="bulk-main-heading">
+                    Filters
+                </h3>
 
-                <div class="download-buttons">
-                    <button onclick="setBulkOutputType('pdf')">PDF</button>
-                    <button onclick="setBulkOutputType('word')">Word</button>
-                    <button onclick="setBulkOutputType('both')">Both</button>
-                </div>
-
-                <div class="download-buttons" style="margin-top:10px;">
-                    <button onclick="downloadBulkZip()">Download ZIP</button>
-                    <button onclick="downloadFailedReport()">Failed Report</button>
-                </div>
-
-            </div>
-        </div>
-
-
-        <!-- Filters -->
-        <div class="sidebar-accordion active">
-            <div class="accordion-header"
-                 onclick="toggleSidebarSection(this)">
-                <span>Filters</span>
-                <span>▼</span>
-            </div>
-
-            <div class="accordion-body">
-
-                <label>Priority</label>
+                <h4 class="bulk-sub-heading">
+                    Priority
+                </h4>
                 <select id="bulk_priority_filter">
                     <option value="">All Priorities</option>
                     <option value="Priority 1">Priority 1</option>
@@ -73,11 +82,13 @@
                     <option value="Priority 4">Priority 4</option>
                 </select>
 
-                <label>Date Range</label>
+                <h4 class="bulk-sub-heading date-range-title">
+                    Date Range
+                </h4>
 
                 <div class="filter-row">
                     <div class="filter-half">
-                        <label>Preset</label>
+                        <label class="bulk-sub-label">Preset</label>
                         <select id="bulk_preset_date_filter">
                             <option value="">Select</option>
                             <option>1 Week</option>
@@ -89,7 +100,7 @@
                     </div>
 
                     <div class="filter-half">
-                        <label>Year</label>
+                        <label class="bulk-sub-label">Year</label>
                         <select id="bulk_year_filter">
                             <option value="">Select</option>
                             <option>2020</option>
@@ -103,16 +114,18 @@
                     </div>
                 </div>
 
-                <div class="filter-row">
+                <div class="filter-date-stack">
+
                     <div class="filter-half">
-                        <label>From</label>
+                        <label class="bulk-sub-label">From</label>
                         <input type="date" id="bulk_from_date">
                     </div>
 
                     <div class="filter-half">
-                        <label>To</label>
+                        <label class="bulk-sub-label">To</label>
                         <input type="date" id="bulk_to_date">
                     </div>
+
                 </div>
 
             </div>
@@ -120,48 +133,63 @@
 
     </div>
 
+    <!-- DOWNLOADS SECTION -->
+    <div id="downloads-section"
+        class="dock-section">
 
-    <!-- FIXED KPI -->
-    <div class="sidebar-bottom-section">
+        <div class="sidebar-bottom-section">
 
-        <div class="status-panel">
-            <h4>Processing Status</h4>
+            <h4 class="bulk-section-title">
+                Downloads
+            </h4>
 
-            <div class="progress-wrapper hidden"
-                 id="progressWrapper">
+            <p class="bulk-helper-text">
+                Generate reports to enable downloads
+            </p>
 
-                <div class="progress-bar">
-                    <div class="progress-fill"
-                         id="progressFill"></div>
-                </div>
+            <div class="download-buttons action-buttons">
 
-                <div class="progress-text"
-                     id="progressText">
-                    Starting...
-                </div>
+                <button onclick="downloadBulkZip()">
+                    ⬇ Download ZIP
+                </button>
+
+                <button onclick="downloadFailedReport()">
+                    ⚠ Failed Report
+                </button>
+
             </div>
 
-            <div class="status-message"
-                 id="statusMessage">
-                Ready
-            </div>
         </div>
 
-        <div class="sidebar-footer compact-kpi-row">
-            <div class="kpi-item">
-                <span class="kpi-label">Total</span>
-                <span class="kpi-value" id="totalJobs">0</span>
+    </div>
+
+    <!-- KPI SECTION -->
+    <div id="kpi-section"
+         class="dock-section">
+
+        <div class="sidebar-bottom-section">
+
+            <h4 class="bulk-section-title">
+                KPI Summary
+            </h4>
+
+            <div class="sidebar-footer compact-kpi-row">
+                <div class="kpi-item">
+                    <span class="kpi-label">Total</span>
+                    <span class="kpi-value" id="totalJobs">0</span>
+                </div>
+
+                <div class="kpi-item success-kpi">
+                    <span class="kpi-label">Success</span>
+                    <span class="kpi-value" id="successJobs">0</span>
+                </div>
+
+                <div class="kpi-item failed-kpi">
+                    <span class="kpi-label">Failed</span>
+                    <span class="kpi-value" id="failedJobs">0</span>
+                </div>
             </div>
 
-            <div class="kpi-item success-kpi">
-                <span class="kpi-label">Success</span>
-                <span class="kpi-value" id="successJobs">0</span>
-            </div>
-
-            <div class="kpi-item failed-kpi">
-                <span class="kpi-label">Failed</span>
-                <span class="kpi-value" id="failedJobs">0</span>
-            </div>
         </div>
 
     </div>
@@ -169,54 +197,60 @@
 </div>
 {% endblock %}
 
+{% block module_status %}
+<div class="progress-wrapper hidden" id="progressWrapper">
 
-
-{% block content %}
-
-<input type="hidden" id="bulk_output_type" value="both">
-
-<!-- TOP NAV -->
-<div class="top-nav-bar">
-
-    <div class="top-nav-left">
-        <button class="top-home-btn" onclick="goHome()">
-            🏠 Home
-        </button>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
     </div>
 
-    <div class="top-nav-center">
-        <div class="module-title-pill">
-            Bulk Report Generator
-        </div>
-    </div>
-
-    <div class="top-nav-right">
-        <button class="help-btn">?</button>
+    <div class="progress-text" id="progressText">
+        Starting...
     </div>
 
 </div>
+{% endblock %}
+
+<!-- TOP NAV -->
+{% block top_left %}
+<a href="/" class="top-home-btn">
+    🏠 Home
+</a>
+{% endblock %}
+
+{% block top_center %}
+<div class="module-title-pill">
+    Bulk Report Generator
+</div>
+{% endblock %}
+
+{% block top_right %}
+<button class="help-btn">?</button>
+{% endblock %}
 
 
 <!-- TOOLBAR -->
-<div class="toolbar-row">
+{% block toolbar_left %}
+<button 
+    class="toolbar-action-btn"
+    onclick="generateBulkReports()">
+    Generate Reports
+</button>
+{% endblock %}
 
-    <div class="toolbar-left-section">
-        <button onclick="generateBulkReports()">
-            Generate Reports
-        </button>
-    </div>
+{% block toolbar_right %}
+<input
+    type="text"
+    class="toolbar-search-input"
+    placeholder="Global Search (Later)"
+    disabled>
+{% endblock %}
 
-    <div class="toolbar-right-section">
-        <input
-            type="text"
-            placeholder="Global Search (Later)"
-            disabled>
-    </div>
+<!-- MAIN CONTENT ONLY -->
+{% block content %}
+<input type="hidden" id="bulk_output_type" value="both">
 
-</div>
-
-<div class="scrollable-report-content">
-
+<!-- SCROLLABLE REPORT CONTENT -->
     <div class="bulk-main-layout">
 
         <div class="card bulk-input-card">
@@ -279,8 +313,10 @@
 
     </div>
 
-</div>
 
+
+{% block page_js %}
 <script src="{{ url_for('static', filename='js/bulk.js') }}"></script>
+{% endblock %}
 
 {% endblock %}

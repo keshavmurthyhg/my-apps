@@ -5,94 +5,14 @@ let uploadedFiles = {
 };
 
 
-/* -----------------------------------
-   PROGRESS FUNCTIONS
------------------------------------ */
-function showProgress(message) {
-    document.getElementById("progressWrapper")
-        .classList.remove("hidden");
-
-    document.getElementById("progressFill")
-        .style.width = "20%";
-
-    document.getElementById("progressFill")
-        .style.background = "#4caf50";
-
-    document.getElementById("progressText")
-        .innerText = message;
-
-    document.getElementById("statusMessage")
-        .innerText = "Processing...";
-}
-
-
-function updateProgress(percent, message) {
-    document.getElementById("progressFill")
-        .style.width = percent + "%";
-
-    document.getElementById("progressText")
-        .innerText = message;
-}
-
-
-function completeProgress(message) {
-    document.getElementById("progressFill")
-        .style.width = "100%";
-
-    document.getElementById("progressText")
-        .innerText = "Completed";
-
-    document.getElementById("statusMessage")
-        .innerText = message;
-
-    setTimeout(() => {
-        document.getElementById("progressWrapper")
-            .classList.add("hidden");
-
-        document.getElementById("progressFill")
-            .style.width = "0%";
-    }, 2000);
-}
-
-
-function failProgress(message) {
-    document.getElementById("progressFill")
-        .style.width = "100%";
-
-    document.getElementById("progressFill")
-        .style.background = "#e74c3c";
-
-    document.getElementById("progressText")
-        .innerText = "Failed";
-
-    document.getElementById("statusMessage")
-        .innerText = message;
-
-    setTimeout(() => {
-        document.getElementById("progressWrapper")
-            .classList.add("hidden");
-
-        document.getElementById("progressFill")
-            .style.width = "0%";
-
-        document.getElementById("progressFill")
-            .style.background = "#4caf50";
-    }, 3000);
-}
-
-
-/* -----------------------------------
-   LOAD INITIAL PREVIEW
------------------------------------ */
+/* ==========================================
+   LOAD PREVIEW
+========================================== */
 async function loadPreview() {
-    const incidentNumber =
-        document.getElementById("incident_number").value.trim();
-
-    const priority =
-        document.getElementById("priority_filter").value;
-
-    const vendor =
-        document.getElementById("vendor_filter").value;
+    const incidentNumber = document
+        .getElementById("incident_number")
+        .value
+        .trim();
 
     if (!incidentNumber) {
         alert("Enter Incident Number");
@@ -102,7 +22,7 @@ async function loadPreview() {
     showProgress("Loading incident data...");
 
     try {
-        updateProgress(50, "Generating preview...");
+        updateProgress(40, "Fetching RCA details...");
 
         const response = await fetch("/get-rca-data", {
             method: "POST",
@@ -110,9 +30,7 @@ async function loadPreview() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                incident_number: incidentNumber,
-                priority: priority,
-                vendor: vendor
+                incident_number: incidentNumber
             })
         });
 
@@ -124,22 +42,41 @@ async function loadPreview() {
             return;
         }
 
-        if (data.preview_html) {
-            document.getElementById("previewContainer").innerHTML =
-                data.preview_html;
+        /* Update preview */
+        document.getElementById("previewContainer").innerHTML =
+            data.preview_html || "No preview available";
+        document.getElementById("activeIncident").innerText = incidentNumber;
+        document.getElementById("lastAction").innerText = "Preview Generated";
+        document.getElementById("downloadStatus").innerText = "Available";
+        
+        /* Populate RCA editor */
+        document.getElementById("problem_statement").value =
+            data.problem_statement || "";
 
-            document.getElementById("problem_statement").value =
-                data.problem_statement || "";
+        document.getElementById("root_cause").value =
+            data.root_cause || "";
 
-            document.getElementById("root_cause").value =
-                data.root_cause || "";
+        document.getElementById("resolution_text").value =
+            data.resolution || "";
 
-            document.getElementById("resolution_text").value =
-                data.resolution || "";
+        /* Hide helper text ONLY */
+        const downloadMessage =
+            document.getElementById("downloadMessage");
 
-            document.getElementById("downloadMessage").style.display = "none";
-            document.getElementById("downloadButtons")
-                .classList.remove("hidden");
+        if (downloadMessage) {
+            downloadMessage.style.display = "none";
+        }
+
+        /* Auto switch to downloads tab */
+        showReportSection("downloads");
+
+        /* KPI update */
+        const reportsCount =
+            document.getElementById("reportsCount");
+
+        if (reportsCount) {
+            reportsCount.innerText =
+                parseInt(reportsCount.innerText || 0) + 1;
         }
 
         completeProgress("Preview generated successfully");
@@ -152,11 +89,13 @@ async function loadPreview() {
 }
 
 
-/* -----------------------------------
+/* ==========================================
    FILE UPLOAD SETUP
------------------------------------ */
+========================================== */
 function setupFileUpload(inputId, type, previewId) {
     const input = document.getElementById(inputId);
+
+    if (!input) return;
 
     input.addEventListener("change", function () {
         const files = Array.from(input.files);
@@ -166,19 +105,22 @@ function setupFileUpload(inputId, type, previewId) {
         });
 
         renderFilePreview(type, previewId);
+
         input.value = "";
     });
 }
 
 
-/* -----------------------------------
-   RENDER FILE CHIPS
------------------------------------ */
+/* ==========================================
+   FILE PREVIEW
+========================================== */
 function renderFilePreview(type, previewId) {
-    const previewContainer =
+    const container =
         document.getElementById(previewId);
 
-    previewContainer.innerHTML = "";
+    if (!container) return;
+
+    container.innerHTML = "";
 
     uploadedFiles[type].forEach((file, index) => {
         const chip = document.createElement("div");
@@ -187,38 +129,41 @@ function renderFilePreview(type, previewId) {
 
         chip.innerHTML = `
             ${file.name}
-            <span onclick="removeFile('${type}', ${index}, '${previewId}')">
-                ×
+            <span class="remove-file"
+                  onclick="removeFile('${type}', ${index}, '${previewId}')">
+                  ×
             </span>
         `;
 
-        previewContainer.appendChild(chip);
+        container.appendChild(chip);
     });
 }
 
 
-/* -----------------------------------
+/* ==========================================
    REMOVE FILE
------------------------------------ */
+========================================== */
 function removeFile(type, index, previewId) {
     uploadedFiles[type].splice(index, 1);
     renderFilePreview(type, previewId);
 }
 
 
-/* -----------------------------------
+/* ==========================================
    UPDATE PREVIEW
------------------------------------ */
+========================================== */
 async function updatePreview() {
-    const incidentNumber =
-        document.getElementById("incident_number").value.trim();
+    const incidentNumber = document
+        .getElementById("incident_number")
+        .value
+        .trim();
 
     if (!incidentNumber) {
         alert("Load incident first");
         return;
     }
 
-    showProgress("Preparing updates...");
+    showProgress("Updating preview...");
 
     const formData = new FormData();
 
@@ -227,10 +172,12 @@ async function updatePreview() {
         "problem",
         document.getElementById("problem_statement").value
     );
+
     formData.append(
         "analysis",
         document.getElementById("root_cause").value
     );
+
     formData.append(
         "resolution",
         document.getElementById("resolution_text").value
@@ -249,7 +196,7 @@ async function updatePreview() {
     });
 
     try {
-        updateProgress(60, "Updating preview...");
+        updateProgress(60, "Refreshing preview...");
 
         const response = await fetch("/update-preview", {
             method: "POST",
@@ -259,7 +206,8 @@ async function updatePreview() {
         const html = await response.text();
 
         document.getElementById("previewContainer").innerHTML = html;
-
+        document.getElementById("lastAction").innerText =
+            "Preview Updated";
         completeProgress("Preview updated successfully");
 
     } catch (error) {
@@ -270,31 +218,36 @@ async function updatePreview() {
 }
 
 
-/* -----------------------------------
+/* ==========================================
    DOWNLOAD REPORT
------------------------------------ */
+========================================== */
 async function downloadReport(type) {
-    const incidentNumber =
-        document.getElementById("incident_number").value.trim();
+    const incidentNumber = document
+        .getElementById("incident_number")
+        .value
+        .trim();
 
     if (!incidentNumber) {
         alert("Load incident first");
         return;
     }
 
-    showProgress("Preparing download...");
+    showProgress(`Generating ${type.toUpperCase()} report...`);
 
     const formData = new FormData();
 
     formData.append("incident_number", incidentNumber);
+
     formData.append(
         "problem_statement",
         document.getElementById("problem_statement").value
     );
+
     formData.append(
         "root_cause",
         document.getElementById("root_cause").value
     );
+
     formData.append(
         "resolution",
         document.getElementById("resolution_text").value
@@ -313,7 +266,7 @@ async function downloadReport(type) {
     });
 
     try {
-        updateProgress(70, "Generating document...");
+        updateProgress(75, "Preparing file...");
 
         const response = await fetch(`/download/${type}`, {
             method: "POST",
@@ -321,9 +274,7 @@ async function downloadReport(type) {
         });
 
         if (!response.ok) {
-            failProgress("Download failed");
-            alert("Download failed");
-            return;
+            throw new Error("Download failed");
         }
 
         const blob = await response.blob();
@@ -344,21 +295,27 @@ async function downloadReport(type) {
         a.click();
         a.remove();
 
+        document.getElementById("lastAction").innerText =
+            `${type.toUpperCase()} Download`;
+
+        document.getElementById("downloadStatus").innerText =
+            `${type.toUpperCase()} Generated`;
+
         completeProgress(
             `${type.toUpperCase()} download completed successfully`
         );
 
     } catch (error) {
         console.error(error);
-        failProgress("Document generation failed");
+        failProgress("Download failed");
         alert("Download failed");
     }
 }
 
 
-/* -----------------------------------
-   CLEAR PAGE
------------------------------------ */
+/* ==========================================
+   CLEAR WORKSPACE
+========================================== */
 function clearPreview() {
     document.getElementById("incident_number").value = "";
 
@@ -379,21 +336,110 @@ function clearPreview() {
     document.getElementById("root_preview_files").innerHTML = "";
     document.getElementById("resolution_preview_files").innerHTML = "";
 
-    document.getElementById("downloadButtons")
-        .classList.add("hidden");
+    /* Restore helper message */
+    const downloadMessage =
+        document.getElementById("downloadMessage");
 
-    document.getElementById("downloadMessage")
-        .style.display = "block";
+    if (downloadMessage) {
+        downloadMessage.style.display = "block";
+    }
 
-    document.getElementById("statusMessage")
-        .innerText = "Ready";
+    showReportSection("downloads");
+
+    document.getElementById("activeIncident").innerText = "-";
+    document.getElementById("lastAction").innerText =
+        "Waiting for input";
+    document.getElementById("downloadStatus").innerText =
+        "Not generated";
+
+    resetProcessingStatus();
 }
 
+/* ==========================================
+   APPLY FILTERS
+========================================== */
+function applyFilters() {
+    console.log("Filters feature not implemented yet");
+}
 
-/* -----------------------------------
+/* ==========================================
+   DOCK SWITCHING
+========================================== */
+function showReportSection(sectionName) {
+
+    document.querySelectorAll(".dock-section").forEach(section => {
+        section.classList.remove("active-section");
+    });
+
+    document.querySelectorAll(".dock-item").forEach(icon => {
+        icon.classList.remove("active-dock");
+    });
+
+    const target =
+        document.getElementById(`${sectionName}-section`);
+
+    if (target) {
+        target.classList.add("active-section");
+    }
+
+    const clickedIcon = document.querySelector(
+        `.dock-item[onclick="showReportSection('${sectionName}')"]`
+    );
+
+    if (clickedIcon) {
+        clickedIcon.classList.add("active-dock");
+    }
+}
+
+/* ==========================================
+   PROCESS STATUS HELPERS
+========================================== */
+
+function showProgress(message) {
+    const status = document.getElementById("processingStatusText");
+
+    if (status) {
+        status.innerText = message;
+    }
+}
+
+function updateProgress(percent, message) {
+    const status = document.getElementById("processingStatusText");
+
+    if (status) {
+        status.innerText = message;
+    }
+}
+
+function completeProgress(message) {
+    const status = document.getElementById("processingStatusText");
+
+    if (status) {
+        status.innerText = message;
+    }
+}
+
+function failProgress(message) {
+    const status = document.getElementById("processingStatusText");
+
+    if (status) {
+        status.innerText = message;
+    }
+}
+
+function resetProcessingStatus() {
+    const status = document.getElementById("processingStatusText");
+
+    if (status) {
+        status.innerText = "Ready";
+    }
+}
+
+/* ==========================================
    INIT
------------------------------------ */
+========================================== */
 document.addEventListener("DOMContentLoaded", function () {
+
     setupFileUpload(
         "problem_images",
         "problem",
@@ -411,20 +457,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "resolution",
         "resolution_preview_files"
     );
+
+    /* Default tab */
+    showReportSection("downloads");
 });
-
-
-/* -----------------------------------
-   SIDEBAR ACCORDION
------------------------------------ */
-function toggleSidebarSection(header) {
-    const parent = header.parentElement;
-    parent.classList.toggle("active");
-}
-
-/* -----------------------------------
-   HOME NAVIGATION
------------------------------------ */
-function goHome() {
-    window.location.href = "/";
-}

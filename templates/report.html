@@ -1,221 +1,228 @@
-{% extends "base.html" %}
+{% extends "main.html" %}
 
-{% block sidebar %}
-
-<div class="sidebar-content">
-
-    <!-- TOP SCROLLABLE SECTION -->
-    <div class="sidebar-top-section">
-
-        <!-- CLEAR -->
-        <div class="sidebar-top-actions">
-            <button class="clear-btn" onclick="clearPreview()">
-                Clear Workspace
-            </button>
-        </div>
-
-        <!-- FILTERS -->
-        <div class="sidebar-accordion active">
-            <div class="accordion-header" onclick="toggleSidebarSection(this)">
-                <span>Filters</span>
-                <span class="accordion-icon">▼</span>
-            </div>
-
-            <div class="accordion-body">
-                <label>Priority</label>
-                <select id="priority_filter">
-                    <option value="All">All</option>
-                    <option value="Priority 1">P1</option>
-                    <option value="Priority 2">P2</option>
-                    <option value="Priority 3">P3</option>
-                    <option value="Priority 4">P4</option>
-                </select>
-
-                <label>Vendor</label>
-                <select id="vendor_filter">
-                    <option value="All">All</option>
-                    <option value="Azure">Azure</option>
-                    <option value="PTC">PTC</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- DOWNLOADS -->
-        <div class="sidebar-accordion">
-            <div class="accordion-header" onclick="toggleSidebarSection(this)">
-                <span>Downloads</span>
-                <span class="accordion-icon">▼</span>
-            </div>
-
-            <div class="accordion-body">
-                <p id="downloadMessage" class="download-message">
-                    Generate preview to enable downloads
-                </p>
-
-                <div id="downloadButtons" class="download-buttons hidden">
-                    <button onclick="downloadReport('word')">Word</button>
-                    <button onclick="downloadReport('pdf')">PDF</button>
-                    <button onclick="downloadReport('zip')">ZIP</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
+{% block page_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/report.css') }}">
+{% endblock %}
 
 
-    <!-- FIXED BOTTOM SECTION -->
-    <div class="sidebar-bottom-section">
+<!-- =========================================
+     DOCK ICONS
+========================================= -->
+{% block dock_icons %}
 
-        <!-- PROCESSING STATUS -->
-        <div class="status-panel">
-            <h4>Processing Status</h4>
+<div class="dock-item active-dock"
+     title="Downloads"
+     onclick="showReportSection('downloads')">
+    ⬇
+</div>
 
-            <div class="progress-wrapper hidden" id="progressWrapper">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-
-                <div class="progress-text" id="progressText">
-                    Starting...
-                </div>
-            </div>
-
-            <div class="status-message" id="statusMessage">
-                Ready
-            </div>
-        </div>
-
-        <!-- KPI FOOTER -->
-        <div class="sidebar-footer">
-            <p>Reports Today: 12</p>
-            <p>Pending: 4</p>
-            <p>Bulk Jobs: 2</p>
-        </div>
-
-    </div>
-
+<div class="dock-item"
+     title="KPI"
+     onclick="showReportSection('kpi')">
+    📊
 </div>
 
 {% endblock %}
 
 
+<!-- =========================================
+     SIDEBAR CONTENT
+========================================= -->
+{% block sidebar %}
+
+<!-- DOWNLOAD SECTION -->
+<div id="downloads-section" class="dock-section active-section">
+
+    <div class="download-panel">
+        <h3>Downloads</h3>
+
+        <p id="downloadMessage">
+            Generate preview to enable downloads
+        </p>
+
+        <div id="downloadButtons" class="download-row">
+            <button onclick="downloadReport('word')">
+                Word
+            </button>
+
+            <button onclick="downloadReport('pdf')">
+                PDF
+            </button>
+
+            <button onclick="downloadReport('zip')">
+                ZIP
+            </button>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- KPI SECTION -->
+<div class="dock-section" id="kpi-section">
+
+    <div class="card-title">KPI</div>
+
+    <div class="kpi-grid">
+        <div class="kpi-box">
+            <span>Reports Today</span>
+            <strong id="reportsCount">12</strong>
+        </div>
+
+        <div class="kpi-box">
+            <span>Pending</span>
+            <strong id="pendingCount">4</strong>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+<!-- =========================================
+     Clear button
+========================================= -->
+
+{% block sidebar_toolbar %}
+
+<div class="sidebar-toolbar">
+
+    <button onclick="clearPreview()">
+        Clear Workspace
+    </button>
+
+    <button onclick="alert('Filters coming soon')">
+        Apply Filters
+    </button>
+
+</div>
+
+{% endblock %}
+
+<!-- =========================================
+     TOP TITLE
+========================================= -->
+{% block top_center %}
+<div class="module-title-pill">
+    RCA Report Generator
+</div>
+{% endblock %}
+
+
+<!-- =========================================
+     TOOLBAR LEFT
+========================================= -->
+{% block toolbar_left %}
+
+<input
+    type="text"
+    id="incident_number"
+    class="toolbar-search-input"
+    placeholder="Enter Incident Number">
+
+<button class="primary-btn"
+        onclick="loadPreview()">
+    Preview
+</button>
+
+{% endblock %}
+
+
+<!-- =========================================
+     TOOLBAR RIGHT
+========================================= -->
+{% block toolbar_right %}
+
+<input
+    type="text"
+    class="toolbar-search-input"
+    placeholder="Global Search (Later)"
+    disabled>
+
+{% endblock %}
+
+
+<!-- =========================================
+     MAIN CONTENT
+========================================= -->
 {% block content %}
 
-<!-- ========================= -->
-<!-- TOP NAVIGATION BAR -->
-<!-- ========================= -->
-<div class="top-nav-bar">
+<!-- Preview -->
+<div class="card preview-card">
+    <h3>Preview</h3>
 
-    <!-- Left -->
-    <div class="top-nav-left">
-        <button class="top-home-btn" onclick="goHome()">
-            🏠 Home
-        </button>
+    <div id="previewContainer">
+        Preview will appear here
     </div>
-
-    <!-- Center -->
-    <div class="top-nav-center">
-        <div class="module-title-pill">
-            RCA Report Generator
-        </div>
-    </div>
-
-    <!-- Right -->
-    <div class="top-nav-right">
-        <button class="help-btn">?</button>
-    </div>
-
 </div>
 
 
-<!-- ========================= -->
-<!-- SECOND TOOLBAR -->
-<!-- ========================= -->
-<div class="toolbar-row">
+<!-- Editable RCA -->
+<div class="card rca-editor-card">
+    <h3>Editable RCA</h3>
 
-    <!-- Left -->
-    <div class="toolbar-left-section">
-        <input
-            type="text"
-            id="incident_number"
-            placeholder="Enter Incident Number">
-
-        <button onclick="loadPreview()">
-            Preview
-        </button>
-    </div>
-
-    <!-- Right -->
-    <div class="toolbar-right-section">
-        <input
-            type="text"
-            placeholder="Global Search (Later)"
-            disabled>
-    </div>
-
-</div>
-
-
-<!-- ========================= -->
-<!-- SCROLLABLE CONTENT AREA -->
-<!-- ========================= -->
-<div class="scrollable-report-content">
-
-    <!-- Preview Section -->
-    <div class="card">
-        <h3>Preview</h3>
-
-        <div id="previewContainer">
-            Preview will appear here
-        </div>
-    </div>
-
-
-    <!-- Editable RCA Section -->
-    <div class="card">
-        <h3>Editable RCA</h3>
-
-        <!-- Problem -->
+    <div class="rca-section">
         <label>Problem Statement</label>
-        <textarea id="problem_statement" rows="4"></textarea>
+        <textarea id="problem_statement"></textarea>
 
         <div class="upload-row">
             <input type="file" id="problem_images" multiple>
             <div id="problem_preview_files"></div>
         </div>
+    </div>
 
-
-        <!-- Root Cause -->
+    <div class="rca-section">
         <label>Root Cause</label>
-        <textarea id="root_cause" rows="4"></textarea>
+        <textarea id="root_cause"></textarea>
 
         <div class="upload-row">
             <input type="file" id="root_images" multiple>
             <div id="root_preview_files"></div>
         </div>
+    </div>
 
-
-        <!-- Resolution -->
+    <div class="rca-section">
         <label>Resolution</label>
-        <textarea id="resolution_text" rows="4"></textarea>
+        <textarea id="resolution_text"></textarea>
 
         <div class="upload-row">
             <input type="file" id="resolution_images" multiple>
             <div id="resolution_preview_files"></div>
         </div>
+    </div>
 
-
-        <!-- Update -->
-        <button onclick="updatePreview()">
+    <div class="update-btn-wrapper">
+        <button class="update-preview-btn" onclick="updatePreview()">
             Update Preview
         </button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block module_status %}
+
+<div class="report-status-meta">
+
+    <div class="status-row">
+        <span class="status-label">Incident:</span>
+        <span id="activeIncident">-</span>
+    </div>
+
+    <div class="status-row">
+        <span class="status-label">Last Action:</span>
+        <span id="lastAction">Waiting for input</span>
+    </div>
+
+    <div class="status-row">
+        <span class="status-label">Downloads:</span>
+        <span id="downloadStatus">Not generated</span>
     </div>
 
 </div>
 
-
-<script src="{{ url_for('static', filename='js/report.js') }}"></script>
-
 {% endblock %}
 
-
+{% block page_js %}
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+{% endblock %}

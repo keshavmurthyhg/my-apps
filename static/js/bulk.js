@@ -62,9 +62,9 @@ function completeProgress(message) {
 ------------------------- */
 
 function generateBulkReports() {
-    const incidents = window.filteredIncidents
-        ? window.filteredIncidents.join(", ")
-        : document.getElementById("bulk_incidents").value.trim();
+    const incidents =
+        document.getElementById("bulk_incidents")
+            .value.trim();
 
     const outputType =
         document.getElementById("bulk_output_type").value;
@@ -182,13 +182,19 @@ function downloadBulkZip() {
         return;
     }
 
+    console.log(
+        "Sending output type:",
+        document.getElementById("bulk_output_type").value
+    );
+
     fetch("/bulk/download-zip", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            incidents: incidents
+            incidents: incidents,
+            output_type: document.getElementById("bulk_output_type").value
         })
     })
     .then(response => response.blob())
@@ -454,3 +460,72 @@ function toggleSidebarSection(header) {
 function goHome() {
     window.location.href = "/";
 }
+
+/* -------------------------
+   OVERRIDE SHARED SIDEBAR BUTTONS
+------------------------- */
+
+function clearPreview() {
+    clearBulkWorkspace();
+}
+
+function applyFilters() {
+    applyBulkFilters();
+}
+
+/* -------------------------
+   DOCK SECTION SWITCHING
+------------------------- */
+
+function showSidebarSection(sectionId) {
+
+    // hide all sections
+    document.querySelectorAll(".dock-section")
+        .forEach(section => {
+            section.style.display = "none";
+        });
+
+    // remove active state
+    document.querySelectorAll(".dock-item")
+        .forEach(item => {
+            item.classList.remove("active-dock");
+        });
+
+    // show selected section
+    const activeSection =
+        document.getElementById(sectionId);
+
+    if (activeSection) {
+        activeSection.style.display = "block";
+    }
+
+    // highlight clicked dock
+    event.currentTarget.classList.add("active-dock");
+}
+
+
+/* -------------------------
+   DEFAULT LOAD STATE
+------------------------- */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const downloadSection =
+        document.getElementById("download-section");
+
+    const filterSection =
+        document.getElementById("filters-section");
+
+    const kpiSection =
+        document.getElementById("kpi-section");
+
+    if (downloadSection) downloadSection.style.display = "block";
+    if (filterSection) filterSection.style.display = "none";
+    if (kpiSection) kpiSection.style.display = "none";
+
+    const downloadsSection =
+        document.getElementById("downloads-section");
+
+    if (downloadsSection)
+        downloadsSection.style.display = "none";
+});

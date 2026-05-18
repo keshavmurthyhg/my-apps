@@ -7,7 +7,7 @@ logger = setup_logger("bulk")
 
 # IMPORTANT:
 # use existing working generator
-from modules.report.bulk_generator import (
+from modules.bulk.bulk_generator import (
     build_bulk_reports,
     generate_bulk_zip
 )
@@ -116,7 +116,8 @@ def filter_incidents(
 # GENERATE BULK ZIP
 # ------------------------------
 def generate_bulk_zip_file(
-    incident_numbers
+    incident_numbers,
+    output_type="both"
 ):
     try:
         logger.info(
@@ -136,7 +137,8 @@ def generate_bulk_zip_file(
         )
 
         zip_buffer = generate_bulk_zip(
-            reports
+            reports,
+            output_type
         )
 
         logger.info(

@@ -143,7 +143,10 @@ def build_bulk_reports(
 # -----------------------------------
 # GENERATE BULK ZIP
 # -----------------------------------
-def generate_bulk_zip(reports):
+def generate_bulk_zip(
+    reports,
+    output_type="both"
+):
     zip_buffer = BytesIO()
 
     current_date = datetime.now().strftime("%d%b%Y")
@@ -188,16 +191,19 @@ def generate_bulk_zip(reports):
                     f"{number}_{current_date}.docx"
                 )
 
-                # Write into ZIP
-                z.writestr(
-                    pdf_filename,
-                    pdf_bytes
-                )
+                # Write selected output into ZIP
 
-                z.writestr(
-                    word_filename,
-                    word_bytes
-                )
+                if output_type in ["pdf", "both"]:
+                    z.writestr(
+                        pdf_filename,
+                        pdf_bytes
+                    )
+
+                if output_type in ["word", "both"]:
+                    z.writestr(
+                        word_filename,
+                        word_bytes
+                    )
 
                 print(
                     f"Generated bulk report for {number}"

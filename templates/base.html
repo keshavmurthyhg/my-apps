@@ -9,7 +9,7 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/common.css') }}">
 
-    <!-- Module specific CSS -->
+    <!-- Module CSS -->
     {% block page_css %}
     {% endblock %}
 </head>
@@ -19,14 +19,35 @@
 <div class="app-layout">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar compact-sidebar">
+    <aside class="sidebar">
 
+        <!-- Fixed title -->
         <div class="sidebar-title">
             Ops Platform
         </div>
 
-        {% block sidebar %}
-        {% endblock %}
+        <!-- Fixed clear section -->
+        <div class="sidebar-action-area">
+            {% block clear_section %}
+            {% endblock %}
+        </div>
+
+        <!-- Scrollable module section -->
+        <div class="sidebar-scrollable-content">
+            {% block sidebar %}
+            {% endblock %}
+        </div>
+
+        <!-- Fixed bottom -->
+        <div class="sidebar-bottom-fixed">
+
+            {% block processing_section %}
+            {% endblock %}
+
+            {% block kpi_section %}
+            {% endblock %}
+
+        </div>
 
     </aside>
 
@@ -37,10 +58,12 @@
         {% block top_nav %}
         {% endblock %}
 
-        {% block toolbar %}
-        {% endblock %}
+        <div class="top-toolbar">
+            {% block toolbar %}
+            {% endblock %}
+        </div>
 
-        <main>
+        <main class="page-content">
             {% block content %}
             {% endblock %}
         </main>
@@ -50,10 +73,8 @@
 </div>
 
 
-<!-- Common JS -->
 <script src="{{ url_for('static', filename='js/common.js') }}"></script>
 
-<!-- Module JS -->
 {% block page_js %}
 {% endblock %}
 

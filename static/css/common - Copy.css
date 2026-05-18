@@ -110,38 +110,27 @@ body {
     padding: 10px;
 }
 
-/* ==========================================
-   FIXED PROCESSING FOOTER
-========================================== */
 
-.processing-footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #1f3a63;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    padding: 14px 18px;
+/* fixed bottom section */
+.sidebar-bottom-fixed {
     flex-shrink: 0;
+    padding: 10px;
+    margin-top: auto;
+    border-top: 1px solid rgba(255,255,255,0.08);
 }
 
-.processing-title {
-    color: white;
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.processing-message {
-    color: white;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.4;
-}
 
 /* =========================
    SIDEBAR CARDS
 ========================= */
+.sidebar-card {
+    background: #2b4f86;
+    margin: 16px;
+    padding: 16px;
+    border-radius: 16px;
+    margin-top: 0;   /* FIX */
+    flex-shrink: 0;
+}
 
 .card-title {
     font-size: 14px;
@@ -224,6 +213,14 @@ body {
 
 .sidebar-main-content {
     width: 100%;
+}
+
+.sidebar-bottom-fixed {
+    margin-top: auto;
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    min-height: 120px;
 }
 
 
@@ -451,6 +448,74 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     margin-bottom: 20px;
 }
+
+
+/* =====================================================
+   Processing spacing
+=================================================== */
+
+.processing-status-container {
+    margin-bottom: 12px;
+}
+
+
+/* =====================================================
+   GENERIC KPI/STATUS
+===================================================== */
+
+.status-box {
+    background: rgba(255,255,255,0.08);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    color: white;
+    font-weight: 600;
+}
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.kpi-box {
+    background: rgba(255,255,255,0.08);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.kpi-box span {
+    font-size: 11px;
+    color: #cbd5e1;
+}
+
+.kpi-box h3 {
+    color: white;
+    font-size: 20px;
+}
+
+/* KPI Block */
+.sidebar-kpi {
+    position: absolute;
+    bottom: 15px;
+    left: 12px;
+    width: calc(100% - 24px);
+
+    background: #274777;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+/* Section title */
+.sidebar-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+}
+
+
 
 /* =========================================
    LEFT DOCK BAR

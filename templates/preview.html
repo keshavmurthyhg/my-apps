@@ -1,58 +1,226 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Preview Report</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-<div class="container">
+{% block head %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/report.css') }}">
+{% endblock %}
 
-    <h2>Preview - {{ data.number }}</h2>
 
-    <!-- BASIC INFO -->
-    <table>
-        <tr><th>Incident</th><td>{{ data.number }}</td></tr>
-        <tr><th>Azure Bug</th><td>{{ data.azure_bug }}</td></tr>
-        <tr><th>PTC Case</th><td>{{ data.ptc_case }}</td></tr>
-        <tr><th>Priority</th><td>{{ data.priority }}</td></tr>
-    </table>
+{% block sidebar %}
 
-    <br>
+<div class="sidebar-content">
 
-    <!-- EDITABLE RCA -->
-    <form action="/generate-report-final" method="POST" enctype="multipart/form-data">
+    <!-- TOP -->
+    <div class="sidebar-top-section">
 
-        <input type="hidden" name="incident_number" value="{{ data.number }}">
+        <div class="sidebar-top-actions">
+            <button class="clear-btn" onclick="clearPreview()">
+                Clear Workspace
+            </button>
+        </div>
 
-        <h3>Problem Statement</h3>
-        <textarea name="problem" rows="6">{{ data.problem }}</textarea>
+        <!-- Filters -->
+        <div class="sidebar-accordion active">
+            <div class="accordion-header"
+                 onclick="toggleSidebarSection(this)">
+                <span>Filters</span>
+                <span>▼</span>
+            </div>
 
-        <h3>Root Cause</h3>
-        <textarea name="analysis" rows="6">{{ data.analysis }}</textarea>
+            <div class="accordion-body">
 
-        <h3>Resolution</h3>
-        <textarea name="resolution" rows="6">{{ data.resolution }}</textarea>
+                <label>Priority</label>
+                <select id="priority_filter">
+                    <option value="All">All</option>
+                    <option value="Priority 1">P1</option>
+                    <option value="Priority 2">P2</option>
+                    <option value="Priority 3">P3</option>
+                    <option value="Priority 4">P4</option>
+                </select>
 
-        <br><br>
+                <label>Vendor</label>
+                <select id="vendor_filter">
+                    <option value="All">All</option>
+                    <option value="Azure">Azure</option>
+                    <option value="PTC">PTC</option>
+                </select>
 
-        <label>Upload Images (optional)</label>
-        <input type="file" name="images" multiple>
+            </div>
+        </div>
 
-        <br><br>
 
-        <select name="report_type" required>
-            <option value="word">Word</option>
-            <option value="pdf">PDF</option>
-        </select>
+        <!-- Downloads -->
+        <div class="sidebar-accordion">
+            <div class="accordion-header"
+                 onclick="toggleSidebarSection(this)">
+                <span>Downloads</span>
+                <span>▼</span>
+            </div>
 
-        <br><br>
+            <div class="accordion-body">
 
-        <button type="submit">Generate Final Report</button>
+                <p id="downloadMessage">
+                    Generate preview to enable downloads
+                </p>
 
-    </form>
+                <div id="downloadButtons"
+                     class="hidden">
+
+                    <button onclick="downloadReport('word')">
+                        Word
+                    </button>
+
+                    <button onclick="downloadReport('pdf')">
+                        PDF
+                    </button>
+
+                    <button onclick="downloadReport('zip')">
+                        ZIP
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- BOTTOM -->
+    <div class="sidebar-bottom-section">
+
+        <div class="status-panel">
+            <h4>Processing Status</h4>
+
+            <div class="progress-wrapper hidden"
+                 id="progressWrapper">
+
+                <div class="progress-bar">
+                    <div class="progress-fill"
+                         id="progressFill"></div>
+                </div>
+
+                <div id="progressText">
+                    Starting...
+                </div>
+            </div>
+
+            <div id="statusMessage">
+                Ready
+            </div>
+        </div>
+
+
+        <div class="sidebar-footer">
+            <p>Reports Today: 12</p>
+            <p>Pending: 4</p>
+            <p>Bulk Jobs: 2</p>
+        </div>
+
+    </div>
 
 </div>
 
-</body>
-</html>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="top-nav-bar">
+
+    <div class="top-nav-left">
+        <button class="top-home-btn"
+                onclick="goHome()">
+            🏠 Home
+        </button>
+    </div>
+
+    <div class="top-nav-center">
+        <div class="module-title-pill">
+            RCA Report Generator
+        </div>
+    </div>
+
+    <div class="top-nav-right">
+        <button class="help-btn">?</button>
+    </div>
+
+</div>
+
+
+<div class="toolbar-row">
+
+    <div class="toolbar-left-section">
+        <input type="text"
+               id="incident_number"
+               placeholder="Enter Incident Number">
+
+        <button onclick="loadPreview()">
+            Preview
+        </button>
+    </div>
+
+    <div class="toolbar-right-section">
+        <input type="text"
+               placeholder="Global Search (Coming Soon)"
+               disabled>
+    </div>
+
+</div>
+
+
+<div class="scrollable-report-content">
+
+    <div class="card">
+        <h3>Preview</h3>
+        <div id="previewContainer">
+            Preview will appear here
+        </div>
+    </div>
+
+
+    <div class="card">
+        <h3>Editable RCA</h3>
+
+        <label>Problem Statement</label>
+        <textarea id="problem_statement"></textarea>
+
+        <div class="upload-row">
+            <input type="file"
+                   id="problem_images"
+                   multiple>
+            <div id="problem_preview_files"></div>
+        </div>
+
+
+        <label>Root Cause</label>
+        <textarea id="root_cause"></textarea>
+
+        <div class="upload-row">
+            <input type="file"
+                   id="root_images"
+                   multiple>
+            <div id="root_preview_files"></div>
+        </div>
+
+
+        <label>Resolution</label>
+        <textarea id="resolution_text"></textarea>
+
+        <div class="upload-row">
+            <input type="file"
+                   id="resolution_images"
+                   multiple>
+            <div id="resolution_preview_files"></div>
+        </div>
+
+
+        <button onclick="updatePreview()">
+            Update Preview
+        </button>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+
+{% endblock %}

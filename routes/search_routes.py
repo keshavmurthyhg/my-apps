@@ -1,53 +1,145 @@
-@search_bp.route("/search/issues", methods=["POST"])
-def search_issues():
-    data = request.json
-    query = data.get("query")
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    jsonify
+)
 
-    results = search_service.search_tickets(query)
+from modules.search.data_loader import load_data
+from modules.search.kpi import calculate_kpi
+from modules.search.search import apply_search
 
-    return jsonify({
-        "results": results
-    })
 
-@app.route("/search/issues", methods=["POST"])
+# -----------------------------------
+# Blueprint
+# -----------------------------------
+search_bp = Blueprint(
+    "search",
+    __name__
+)
+
+
+# -----------------------------------
+# Search Page
+# -----------------------------------
+@search_bp.route("/search")
+def search_page():
+    try:
+        df, last_refresh = load_data()
+        kpi = calculate_kpi(df)
+
+        return render_template(
+            "search.html",
+            last_refresh=last_refresh,
+            kpi=kpi
+        )
+
+    except Exception as e:
+        return str(e)
+
+
+# -----------------------------------
+# Search Issues API
+# -----------------------------------
+@search_bp.route(
+    "/search/issues",
+    methods=["POST"]
+)
 def search_issues():
     try:
-        from modules.search.data_loader import load_data
-        from modules.search.search import apply_search
-
         data = request.json
-        query = data.get("query", "")
+        query = data.get(
+            "query",
+            ""
+        )
 
         df, _ = load_data()
 
-        filtered = apply_search(df, query)
+        filtered = apply_search(
+            df,
+            query
+        )
 
         filtered = filtered.fillna("")
 
         results = []
 
         for _, row in filtered.iterrows():
-            source = row.get("Source", "")
-            number = str(row.get("Number", ""))
 
+            source = row.get(
+                "Source",
+                ""
+            )
+
+            number = str(
+                row.get(
+                    "Number",
+                    ""
+                )
+            )
+
+            # -----------------------------
+            # external links
+            # -----------------------------
             if source == "SNOW":
-                url = f"https://volvoitsm.service-now.com/nav_to.do?uri=incident.do?sysparm_query=number={number}"
+                url = (
+                    "https://volvoitsm.service-now.com/"
+                    f"nav_to.do?uri=incident.do?"
+                    f"sysparm_query=number={number}"
+                )
+
             elif source == "PTC":
-                url = f"https://support.ptc.com/appserver/cs/view/case.jsp?n={number}"
+                url = (
+                    "https://support.ptc.com/"
+                    f"appserver/cs/view/"
+                    f"case.jsp?n={number}"
+                )
+
             elif source == "AZURE":
-                url = f"https://dev.azure.com/VolvoGroup-DVP/VCEWindchillPLM/_workitems/edit/{number}"
+                url = (
+                    "https://dev.azure.com/"
+                    "VolvoGroup-DVP/"
+                    "VCEWindchillPLM/"
+                    f"_workitems/edit/{number}"
+                )
+
             else:
                 url = ""
 
             results.append({
                 "number": number,
-                "description": row.get("Description", ""),
-                "priority": row.get("Priority", ""),
-                "status": row.get("Status", ""),
-                "created_by": row.get("Created By", ""),
-                "created_date": str(row.get("Created Date", "")),
-                "assigned_to": row.get("Assigned To", ""),
-                "resolved_date": str(row.get("Resolved Date", "")),
+                "description": row.get(
+                    "Description",
+                    ""
+                ),
+                "priority": row.get(
+                    "Priority",
+                    ""
+                ),
+                "status": row.get(
+                    "Status",
+                    ""
+                ),
+                "created_by": row.get(
+                    "Created By",
+                    ""
+                ),
+                "created_date": str(
+                    row.get(
+                        "Created Date",
+                        ""
+                    )
+                ),
+                "assigned_to": row.get(
+                    "Assigned To",
+                    ""
+                ),
+                "resolved_date": str(
+                    row.get(
+                        "Resolved Date",
+                        ""
+                    )
+                ),
                 "source": source,
                 "url": url
             })
