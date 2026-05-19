@@ -1,6 +1,10 @@
 import pandas as pd
 import os
 
+from modules.common.utils.parsers import (
+    prepare_search_dataframe
+)
+
 def load_snow_data():
 
     file_path = os.path.join("data", "Snow.xlsx")
@@ -11,6 +15,6 @@ def load_snow_data():
     df = pd.read_excel(file_path)
 
     # normalize column names
-    df.columns = df.columns.str.strip().str.lower()
+    df = prepare_search_dataframe(df)
 
     return df

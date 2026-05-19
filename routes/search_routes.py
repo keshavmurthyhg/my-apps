@@ -1,3 +1,5 @@
+import pandas as pd
+
 from flask import (
     Blueprint,
     render_template,
@@ -8,7 +10,12 @@ from flask import (
 from modules.search.data_loader import load_data
 from modules.search.kpi import calculate_kpi
 from modules.search.search import apply_search
-
+from modules.common.utils.parsers import (
+    format_display_date
+)
+from modules.common.utils.links import (
+    get_url
+)
 
 # -----------------------------------
 # Blueprint
@@ -39,6 +46,52 @@ def search_page():
 
 
 # -----------------------------------
+# Filter Options API
+# -----------------------------------
+@search_bp.route("/search/filter-options")
+def search_filter_options():
+
+    try:
+
+        df, _ = load_data()
+
+        status = sorted(
+            df["Status"]
+            .dropna()
+            .astype(str)
+            .unique()
+            .tolist()
+        )
+
+        priority = sorted(
+            df["Priority"]
+            .dropna()
+            .astype(str)
+            .unique()
+            .tolist()
+        )
+
+        groups = sorted(
+            df["Assigned To"]
+            .dropna()
+            .astype(str)
+            .unique()
+            .tolist()
+        )
+
+        return jsonify({
+            "status": status,
+            "priority": priority,
+            "groups": groups
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "error": str(e)
+        })
+
+# -----------------------------------
 # Search Issues API
 # -----------------------------------
 @search_bp.route(
@@ -47,14 +100,119 @@ def search_page():
 )
 def search_issues():
     try:
+
         data = request.json
+
         query = data.get(
             "query",
             ""
         )
 
+        sources = data.get(
+            "sources",
+            []
+        )
+
+        status = data.get(
+            "status",
+            ""
+        )
+
+        priority = data.get(
+            "priority",
+            ""
+        )
+
+        group = data.get(
+            "group",
+            ""
+        )
+
+        date_field = data.get(
+            "date_field",
+            "created"
+        )
+
+        start_date = data.get(
+            "start_date",
+            ""
+        )
+
+        end_date = data.get(
+            "end_date",
+            ""
+        )
+
         df, _ = load_data()
 
+        # -----------------------------------
+        # SOURCE FILTER
+        # -----------------------------------
+        if sources:
+            df = df[
+                df["Source"].isin(sources)
+            ]
+
+        # -----------------------------------
+        # STATUS FILTER
+        # -----------------------------------
+        if status:
+            df = df[
+                df["Status"].astype(str) == status
+            ]
+
+
+        # -----------------------------------
+        # PRIORITY FILTER
+        # -----------------------------------
+        if priority:
+            df = df[
+                df["Priority"].astype(str) == priority
+            ]
+
+
+        # -----------------------------------
+        # GROUP FILTER
+        # -----------------------------------
+        if group:
+            df = df[
+                df["Assigned To"].astype(str) == group
+            ]
+
+        # -----------------------------------
+        # DATE FIELD
+        # -----------------------------------
+        date_column = (
+            "Created Date"
+            if date_field == "created"
+            else "Resolved Date"
+        )
+
+
+        # -----------------------------------
+        # DATE RANGE FILTER
+        # -----------------------------------
+
+        if start_date:
+
+            start_date = pd.to_datetime(start_date)
+
+            df = df[
+                df[date_column] >= start_date
+            ]
+
+
+        if end_date:
+
+            end_date = pd.to_datetime(end_date)
+
+            df = df[
+                df[date_column] <= end_date
+            ]
+
+        # -----------------------------------
+        # SEARCH
+        # -----------------------------------
         filtered = apply_search(
             df,
             query
@@ -82,26 +240,13 @@ def search_issues():
             # external links
             # -----------------------------
             if source == "SNOW":
-                url = (
-                    "https://volvoitsm.service-now.com/"
-                    f"nav_to.do?uri=incident.do?"
-                    f"sysparm_query=number={number}"
-                )
+                url = get_url("incident", number)
 
             elif source == "PTC":
-                url = (
-                    "https://support.ptc.com/"
-                    f"appserver/cs/view/"
-                    f"case.jsp?n={number}"
-                )
+                url = get_url("ptc case", number)
 
             elif source == "AZURE":
-                url = (
-                    "https://dev.azure.com/"
-                    "VolvoGroup-DVP/"
-                    "VCEWindchillPLM/"
-                    f"_workitems/edit/{number}"
-                )
+                url = get_url("azure bug", number)
 
             else:
                 url = ""
@@ -124,21 +269,15 @@ def search_issues():
                     "Created By",
                     ""
                 ),
-                "created_date": str(
-                    row.get(
-                        "Created Date",
-                        ""
-                    )
+                "created_date": format_display_date(
+                    row.get("Created Date")
                 ),
                 "assigned_to": row.get(
                     "Assigned To",
                     ""
                 ),
-                "resolved_date": str(
-                    row.get(
-                        "Resolved Date",
-                        ""
-                    )
+                "resolved_date": format_display_date(
+                    row.get("Resolved Date")
                 ),
                 "source": source,
                 "url": url

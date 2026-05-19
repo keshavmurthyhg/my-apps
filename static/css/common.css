@@ -608,3 +608,61 @@ body {
     background: #8b8b8b;
     border-radius: 4px;
 }
+
+/* =========================================
+   PAGINATION
+========================================= */
+
+.pagination-controls {
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-btn {
+
+    width: 34px;
+    height: 34px;
+
+    border-radius: 8px;
+
+    border: 1px solid #d1d5db;
+
+    background: white;
+
+    color: #64748b;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover {
+
+    background: #f3f4f6;
+
+    color: #172b46;
+}
+
+.page-btn:disabled {
+
+    opacity: 0.4;
+
+    cursor: not-allowed;
+}
+
+.page-info {
+
+    min-width: 120px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    color: #374151;
+
+    font-weight: 600;
+}

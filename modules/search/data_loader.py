@@ -1,5 +1,10 @@
 import pandas as pd
 
+from modules.common.utils.parsers import (
+    parse_mixed_date,
+    normalize_priority
+)
+
 # -------------------------------
 # NORMALIZE COLUMN NAMES
 # -------------------------------
@@ -17,21 +22,6 @@ def col(df, *names):
             return df[n]
     return None
 
-
-# -------------------------------
-# DATE PARSER (FIXED)
-# -------------------------------
-def parse_mixed_date(val):
-    if pd.isna(val):
-        return pd.NaT
-
-    val = str(val).strip()
-
-    try:
-        # 🔥 Let pandas auto-detect + enforce day-first
-        return pd.to_datetime(val, dayfirst=True, errors="coerce")
-    except:
-        return pd.NaT
 
 # -------------------------------
 # AZURE
@@ -125,6 +115,14 @@ def load_data():
     for col_name in ["Created Date", "Resolved Date"]:
         if col_name in df.columns:
             df[col_name] = df[col_name].apply(parse_mixed_date)
+
+    # ---------- PRIORITY NORMALIZATION ----------
+
+    if "Priority" in df.columns:
+
+        df["Priority"] = df["Priority"].apply(
+            normalize_priority
+        )
 
     df = df.fillna("")
 

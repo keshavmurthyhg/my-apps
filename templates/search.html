@@ -11,12 +11,35 @@
 ========================================= -->
 {% block dock_icons %}
 
+<!-- SOURCE -->
 <div class="dock-item active-dock"
-     title="Filters"
-     onclick="showSearchSection('filters')">
+     title="Source"
+     onclick="showSearchSection('source')">
+    📂
+</div>
+
+<!-- USER GROUP -->
+<div class="dock-item"
+     title="User Group"
+     onclick="showSearchSection('group')">
+    👥
+</div>
+
+<!-- FILTER -->
+<div class="dock-item"
+     title="Status Filter"
+     onclick="showSearchSection('filter')">
     🎯
 </div>
 
+<!-- DATE -->
+<div class="dock-item"
+     title="Date Filter"
+     onclick="showSearchSection('date')">
+    📅
+</div>
+
+<!-- KPI -->
 <div class="dock-item"
      title="KPI"
      onclick="showSearchSection('kpi')">
@@ -37,7 +60,7 @@
         Clear Workspace
     </button>
 
-    <button onclick="applySearchFilters()">
+    <button onclick="performSearch()">
         Apply Filters
     </button>
 
@@ -61,11 +84,12 @@
 ========================================= -->
 {% block sidebar %}
 
-<!-- FILTER SECTION -->
-<div id="filters-section"
+<!-- =========================================
+     SOURCE SECTION
+========================================= -->
+<div id="source-section"
      class="dock-section active-section">
 
-    <!-- SOURCE -->
     <div class="sidebar-card">
 
         <div class="card-title">
@@ -109,8 +133,15 @@
 
     </div>
 
+</div>
 
-    <!-- USER GROUP -->
+
+<!-- =========================================
+     USER GROUP SECTION
+========================================= -->
+<div id="group-section"
+     class="dock-section">
+
     <div class="sidebar-card">
 
         <div class="card-title">
@@ -123,12 +154,19 @@
 
     </div>
 
+</div>
 
-    <!-- FILTERS -->
+
+<!-- =========================================
+     FILTER SECTION
+========================================= -->
+<div id="filter-section"
+     class="dock-section">
+
     <div class="sidebar-card">
 
         <div class="card-title">
-            Filters
+            Status Filter
         </div>
 
         <select id="statusFilter">
@@ -145,45 +183,118 @@
 
     </div>
 
+</div>
 
-    <!-- DATE FILTER -->
+
+<!-- =========================================
+     DATE SECTION
+========================================= -->
+<div id="date-section"
+     class="dock-section">
+
     <div class="sidebar-card">
 
         <div class="card-title">
             Date Filter
         </div>
 
+        <!-- DATE FIELD -->
         <select id="dateField">
-            <option>Created Date</option>
-            <option>Resolved Date</option>
+
+            <option value="created">
+                Created Date
+            </option>
+
+            <option value="resolved">
+                Resolved Date
+            </option>
+
         </select>
 
-        <div class="radio-group">
 
-            <label>
-                <input type="radio"
-                       name="dateType"
-                       checked>
+        <!-- FILTER TYPE -->
+        <select id="dateFilterType"
+                onchange="handleDateFilterType()">
+
+            <option value="none">
                 No Filter
-            </label>
+            </option>
 
-            <label>
-                <input type="radio"
-                       name="dateType">
+            <option value="range">
                 Date Range
-            </label>
+            </option>
 
-            <label>
-                <input type="radio"
-                       name="dateType">
+            <option value="year">
                 By Year
-            </label>
+            </option>
 
-            <label>
-                <input type="radio"
-                       name="dateType">
+            <option value="quick">
                 Quick Select
-            </label>
+            </option>
+
+        </select>
+
+
+        <!-- DATE RANGE -->
+        <div id="dateRangeSection"
+             class="date-sub-section">
+
+            <input type="date"
+                   id="startDate">
+
+            <input type="date"
+                   id="endDate">
+
+        </div>
+
+
+        <!-- YEAR -->
+        <div id="yearSection"
+             class="date-sub-section">
+
+            <select id="yearFilter">
+
+                <option value="">
+                    Select Year
+                </option>
+
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+
+            </select>
+
+        </div>
+
+
+        <!-- QUICK SELECT -->
+        <div id="quickSection"
+             class="date-sub-section">
+
+            <select id="quickDate">
+
+                <option value="">
+                    Quick Select
+                </option>
+
+                <option value="7">
+                    Last 7 Days
+                </option>
+
+                <option value="30">
+                    Last 30 Days
+                </option>
+
+                <option value="90">
+                    Last 90 Days
+                </option>
+
+                <option value="365">
+                    Last 1 Year
+                </option>
+
+            </select>
 
         </div>
 
@@ -192,42 +303,48 @@
 </div>
 
 
-<!-- KPI SECTION -->
+<!-- =========================================
+     KPI SECTION
+========================================= -->
 <div id="kpi-section"
      class="dock-section">
 
-    <div class="card-title">
-        KPI
-    </div>
+    <div class="sidebar-card">
 
-    <div class="kpi-grid">
-
-        <div class="kpi-box">
-            <span>Total</span>
-            <strong id="kpiTotal">
-                {{ kpi.total }}
-            </strong>
+        <div class="card-title">
+            KPI
         </div>
 
-        <div class="kpi-box">
-            <span>Open</span>
-            <strong id="kpiOpen">
-                {{ kpi.open }}
-            </strong>
-        </div>
+        <div class="kpi-grid">
 
-        <div class="kpi-box">
-            <span>Closed</span>
-            <strong id="kpiClosed">
-                {{ kpi.closed }}
-            </strong>
-        </div>
+            <div class="kpi-box">
+                <span>Total</span>
+                <strong id="kpiTotal">
+                    {{ kpi.total }}
+                </strong>
+            </div>
 
-        <div class="kpi-box">
-            <span>Cancelled</span>
-            <strong id="kpiCancelled">
-                {{ kpi.cancelled }}
-            </strong>
+            <div class="kpi-box">
+                <span>Open</span>
+                <strong id="kpiOpen">
+                    {{ kpi.open }}
+                </strong>
+            </div>
+
+            <div class="kpi-box">
+                <span>Closed</span>
+                <strong id="kpiClosed">
+                    {{ kpi.closed }}
+                </strong>
+            </div>
+
+            <div class="kpi-box">
+                <span>Cancelled</span>
+                <strong id="kpiCancelled">
+                    {{ kpi.cancelled }}
+                </strong>
+            </div>
+
         </div>
 
     </div>
@@ -252,17 +369,49 @@
     Search
 </button>
 
+<!-- ROWS -->
 <select id="rowsPerPage"
         class="toolbar-select">
-    <option>10</option>
-    <option>25</option>
-    <option>50</option>
+
+    <option value="10">10</option>
+    <option value="25">25</option>
+    <option value="50">50</option>
+    <option value="100">100</option>
+
 </select>
 
-<select id="pageNumber"
-        class="toolbar-select">
-    <option>1</option>
-</select>
+
+<!-- PAGINATION -->
+<div class="pagination-controls">
+
+    <button id="firstPageBtn"
+            class="page-btn">
+        &#171;
+    </button>
+
+    <button id="prevPageBtn"
+            class="page-btn">
+        &#8249;
+    </button>
+
+    <div id="pageInfo"
+         class="page-info">
+
+        0 to 0 of 0
+
+    </div>
+
+    <button id="nextPageBtn"
+            class="page-btn">
+        &#8250;
+    </button>
+
+    <button id="lastPageBtn"
+            class="page-btn">
+        &#187;
+    </button>
+
+</div>
 
 <button id="downloadBtn"
         class="primary-btn">
@@ -328,38 +477,39 @@
 
 <!-- TABLE -->
 <div class="search-results-container">
+    
+    <div class="table-scroll-wrapper">
+        
+        <table id="searchResultsTable">
 
-    <table id="searchResultsTable">
+            <thead>
+                <tr>
+                    <th>SL No</th>
+                    <th>Number</th>
+                    <th>Description</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>Created Date</th>
+                    <th>Assigned To</th>
+                    <th>Resolved Date</th>
+        
+                </tr>
+            </thead>
 
-        <thead>
-            <tr>
-                <th>SL No</th>
-                <th>Number</th>
-                <th>Description</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Created By</th>
-                <th>Created Date</th>
-                <th>Assigned To</th>
-                <th>Resolved Date</th>
-                <th>Source</th>
-                <th>Open</th>
-            </tr>
-        </thead>
+            <tbody id="searchResultsBody">
 
-        <tbody id="searchResultsBody">
+                <tr>
+                    <td colspan="9"
+                        class="empty-search-message">
+                        Search results will appear here
+                    </td>
+                </tr>
 
-            <tr>
-                <td colspan="11"
-                    class="empty-search-message">
-                    Search results will appear here
-                </td>
-            </tr>
+            </tbody>
 
-        </tbody>
-
-    </table>
-
+        </table>
+    </div>
 </div>
 
 
@@ -375,36 +525,21 @@
 ========================================= -->
 {% block module_status %}
 
-<div class="report-status-meta">
+<div class="search-progress-wrapper">
 
-    <div class="status-row">
-        <span class="status-label">
-            Search:
-        </span>
-
-        <span id="activeSearch">
-            -
-        </span>
+    <!-- STATUS MESSAGE -->
+    <div id="searchStatusText"
+         class="search-status-text">
+        Waiting for search
     </div>
 
-    <div class="status-row">
-        <span class="status-label">
-            Results:
-        </span>
+    <!-- PROGRESS BAR -->
+    <div class="search-progress-bar">
 
-        <span id="searchResultStatus">
-            0 records
-        </span>
-    </div>
+        <div id="searchProgressFill"
+             class="search-progress-fill">
+        </div>
 
-    <div class="status-row">
-        <span class="status-label">
-            Last Action:
-        </span>
-
-        <span id="lastSearchAction">
-            Waiting
-        </span>
     </div>
 
 </div>
