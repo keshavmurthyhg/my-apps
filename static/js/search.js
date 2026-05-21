@@ -311,11 +311,6 @@ document
     });
 
 
-document
-    .getElementById("clearBtn")
-    .addEventListener("click", clearSearchWorkspace);
-
-
 /* =========================================
    CLEAR
 ========================================= */
@@ -779,3 +774,568 @@ document
 
         renderCurrentPage();
     });
+
+/* =========================================================
+   COLUMN RESIZE + SAVE PREFERENCE
+========================================================= */
+
+const COLUMN_STORAGE_KEY = "search_table_column_widths";
+
+const defaultColumnWidths = {
+    slno: 70,
+    number: 150,
+    description: 420,
+    priority: 150,
+    status: 140,
+    createdby: 220,
+    createddate: 160,
+    assignedto: 220,
+    resolveddate: 160
+};
+
+/* =========================================================
+   LOAD SAVED WIDTHS
+========================================================= */
+
+function loadColumnWidths() {
+
+    const saved =
+        JSON.parse(
+            localStorage.getItem(COLUMN_STORAGE_KEY)
+        ) || defaultColumnWidths;
+
+    Object.keys(saved).forEach(column => {
+
+        const col = document.getElementById(`col-${column}`);
+
+        if (col) {
+            col.style.width = `${saved[column]}px`;
+        }
+    });
+}
+
+/* =========================================================
+   SAVE WIDTH
+========================================================= */
+
+function saveColumnWidth(column, width) {
+
+    const saved =
+        JSON.parse(
+            localStorage.getItem(COLUMN_STORAGE_KEY)
+        ) || defaultColumnWidths;
+
+    saved[column] = width;
+
+    localStorage.setItem(
+        COLUMN_STORAGE_KEY,
+        JSON.stringify(saved)
+    );
+}
+
+/* =========================================================
+   ENABLE RESIZE
+========================================================= */
+
+function enableColumnResize() {
+
+    const headers =
+        document.querySelectorAll(
+            "#searchResultsTable th"
+        );
+
+    headers.forEach(header => {
+
+        const handle =
+            header.querySelector(".resize-handle");
+
+        if (!handle) return;
+
+        handle.addEventListener("mousedown", function (e) {
+
+            e.preventDefault();
+
+            const column =
+                header.dataset.column;
+
+            const col =
+                document.getElementById(
+                    `col-${column}`
+                );
+
+            const startX = e.pageX;
+
+            const startWidth =
+                col.offsetWidth;
+
+            function mouseMoveHandler(e) {
+
+                const newWidth =
+                    startWidth +
+                    (e.pageX - startX);
+
+                if (newWidth < 60) return;
+
+                col.style.width =
+                    `${newWidth}px`;
+            }
+
+            function mouseUpHandler(e) {
+
+                const finalWidth =
+                    col.offsetWidth;
+
+                saveColumnWidth(
+                    column,
+                    finalWidth
+                );
+
+                document.removeEventListener(
+                    "mousemove",
+                    mouseMoveHandler
+                );
+
+                document.removeEventListener(
+                    "mouseup",
+                    mouseUpHandler
+                );
+            }
+
+            document.addEventListener(
+                "mousemove",
+                mouseMoveHandler
+            );
+
+            document.addEventListener(
+                "mouseup",
+                mouseUpHandler
+            );
+        });
+    });
+}
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadColumnWidths();
+
+        enableColumnResize();
+    }
+);
+
+/* =========================================
+   ACTIVATE MANAGE GROUP
+========================================= */
+
+function activateManageGroup() {
+
+    const panel =
+        document.getElementById(
+            "groupManagePanel"
+        );
+
+    panel.classList.toggle(
+        "active-group-panel"
+    );
+
+    loadUsersForGroupMapping();
+    loadExistingGroups();
+}
+
+
+/* =========================================
+   LOAD USERS
+========================================= */
+
+async function loadUsersForGroupMapping() {
+
+    const container =
+        document.getElementById(
+            "groupUsersContainer"
+        );
+
+    container.innerHTML =
+        `<div class="loading-users">
+            Loading users...
+        </div>`;
+
+    try {
+
+        const response = await fetch(
+            "/search/group-users"
+        );
+
+        const data =
+            await response.json();
+
+        const users =
+            data.users || [];
+
+        container.innerHTML = "";
+
+        users
+            .sort()
+            .forEach(user => {
+
+                container.innerHTML += `
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            value="${user}"
+                        >
+
+                        <span>${user}</span>
+
+                    </label>
+                `;
+            });
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        container.innerHTML =
+            `<div class="loading-users">
+                Failed to load users
+            </div>`;
+    }
+}
+
+/* =========================================
+   SAVE GROUP
+========================================= */
+
+async function saveGroupMapping() {
+
+    const groupName =
+        document.getElementById(
+            "groupNameInput"
+        ).value.trim();
+
+    const users = Array.from(
+
+        document.querySelectorAll(
+            "#groupUsersContainer input:checked"
+        )
+
+    ).map(cb => cb.value);
+
+
+    if (!groupName) {
+
+        alert(
+            "Enter group name"
+        );
+
+        return;
+    }
+
+
+    const response = await fetch(
+        "/search/save-group",
+        {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+
+                group_name: groupName,
+
+                users: users
+            })
+        }
+    );
+
+    const result =
+        await response.json();
+
+
+    if (result.success) {
+
+        alert(
+            "Group saved successfully"
+        );
+
+        loadFilterOptions();
+        loadExistingGroups();
+    }
+}
+
+/* =========================================
+   LOAD EXISTING GROUPS
+========================================= */
+
+async function loadExistingGroups() {
+
+    const container =
+        document.getElementById(
+            "existingGroupsContainer"
+        );
+
+    container.innerHTML = "";
+
+    try {
+
+        const response =
+            await fetch(
+                "/search/group-members"
+            );
+
+        const data =
+            await response.json();
+
+        const groups =
+            data.groups || {};
+
+        Object.keys(groups)
+            .sort()
+            .forEach(group => {
+
+                const users =
+                    groups[group];
+
+                let usersHtml = "";
+
+                users.forEach(user => {
+
+                    usersHtml += `
+                        <div class="group-member-row">
+                            ${user}
+                        </div>
+                    `;
+                });
+
+                container.innerHTML += `
+
+                    <div class="group-card">
+
+                        <div class="group-card-title">
+                            ${group}
+                        </div>
+
+                        <div class="group-card-users">
+
+                            ${usersHtml}
+
+                        </div>
+
+                    </div>
+                `;
+            });
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+    }
+}
+
+/* =========================================
+   TOGGLE MANAGE GROUP
+========================================= */
+
+function toggleManageGroupSection() {
+
+    const manage =
+        document.getElementById(
+            "manageGroupSection"
+        );
+
+    const existing =
+        document.getElementById(
+            "existingGroupsSection"
+        );
+
+    const isVisible =
+        manage.classList.contains(
+            "active-group-section"
+        );
+
+    manage.classList.toggle(
+        "active-group-section",
+        !isVisible
+    );
+
+    existing.classList.remove(
+        "active-group-section"
+    );
+
+    if (!isVisible) {
+
+        loadUsersForGroupMapping();
+    }
+}
+
+/* =========================================
+   TOGGLE EXISTING GROUPS
+========================================= */
+
+function toggleExistingGroupsSection() {
+
+    const manage =
+        document.getElementById(
+            "manageGroupSection"
+        );
+
+    const existing =
+        document.getElementById(
+            "existingGroupsSection"
+        );
+
+    const isVisible =
+        existing.classList.contains(
+            "active-group-section"
+        );
+
+    existing.classList.toggle(
+        "active-group-section",
+        !isVisible
+    );
+
+    manage.classList.remove(
+        "active-group-section"
+    );
+
+    if (!isVisible) {
+
+        loadExistingGroups();
+    }
+}
+
+/* =========================================
+   DOWNLOAD RESULTS EXCEL
+========================================= */
+
+document
+    .getElementById("downloadBtn")
+    .addEventListener("click", downloadResults);
+
+
+/* =========================================
+   DOWNLOAD FUNCTION
+========================================= */
+
+function downloadResults() {
+
+    if (!currentResults.length) {
+
+        alert("No results available");
+
+        return;
+    }
+
+    // -----------------------------------
+    // FORMAT DATA
+    // -----------------------------------
+    const exportData = currentResults.map(row => ({
+
+        "Number": row.number,
+        "Description": row.description,
+        "Priority": row.priority,
+        "Status": row.status,
+        "Created By": cleanUserDisplay(row.created_by),
+        "Created Date": row.created_date,
+        "Assigned To": cleanUserDisplay(row.assigned_to),
+        "Resolved Date": row.resolved_date,
+        "Source": row.source
+
+    }));
+
+
+    // -----------------------------------
+    // CREATE SHEET
+    // -----------------------------------
+    const worksheet =
+        XLSX.utils.json_to_sheet(exportData);
+
+
+    // -----------------------------------
+    // COLUMN WIDTHS
+    // -----------------------------------
+    worksheet["!cols"] = [
+
+        { wch: 18 }, // Number
+        { wch: 50 }, // Description
+        { wch: 14 }, // Priority
+        { wch: 16 }, // Status
+        { wch: 28 }, // Created By
+        { wch: 16 }, // Created Date
+        { wch: 28 }, // Assigned To
+        { wch: 16 }, // Resolved Date
+        { wch: 12 }  // Source
+
+    ];
+
+
+    // -----------------------------------
+    // CREATE WORKBOOK
+    // -----------------------------------
+    const workbook =
+        XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Search Results"
+    );
+
+    /* =========================================
+    CLEAN USER DISPLAY
+    ========================================= */
+
+    function cleanUserDisplay(value) {
+
+        if (!value) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/<.*?>/g, "")
+            .trim();
+    }    
+
+    /* =========================================
+    FILE NAME
+    ========================================= */
+
+    const today = new Date();
+
+    const day =
+        String(today.getDate()).padStart(2, "0");
+
+    const month =
+        today.toLocaleString(
+            "en-US",
+            { month: "short" }
+        ).toUpperCase();
+
+    const year =
+        today.getFullYear();
+
+    const fileName =
+        `Case_Report_${day}${month}${year}.xlsx`;
+
+
+    /* =========================================
+    DOWNLOAD FILE
+    ========================================= */
+
+    XLSX.writeFile(
+        workbook,
+        fileName
+    );
+}

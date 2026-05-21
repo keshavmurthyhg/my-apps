@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Common Layout Test</title>
+    <title>
+        {% block page_title %}
+        Ops Platform
+        {% endblock %}
+    </title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/common.css') }}">

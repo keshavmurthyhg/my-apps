@@ -183,15 +183,25 @@ def generate_bulk_zip(
                     images=report["images"]
                 )
 
-                # File names with date
+                # -----------------------------------
+                # INCIDENT FOLDER
+                # -----------------------------------
+                incident_folder = f"{number}/"
+
+                # File names
                 pdf_filename = (
+                    f"{incident_folder}"
                     f"{number}_{current_date}.pdf"
                 )
+
                 word_filename = (
+                    f"{incident_folder}"
                     f"{number}_{current_date}.docx"
                 )
 
-                # Write selected output into ZIP
+                # -----------------------------------
+                # WRITE SELECTED OUTPUTS
+                # -----------------------------------
 
                 if output_type in ["pdf", "both"]:
                     z.writestr(

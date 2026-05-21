@@ -17,6 +17,18 @@ from modules.common.utils.links import (
     get_url
 )
 
+from modules.common.utils.user_group import (
+    save_user_group,
+    filter_dataframe_by_group
+)
+
+from modules.search.data_loader import (
+    load_group_filters,
+    load_group_users
+)
+
+
+
 # -----------------------------------
 # Blueprint
 # -----------------------------------
@@ -71,13 +83,7 @@ def search_filter_options():
             .tolist()
         )
 
-        groups = sorted(
-            df["Assigned To"]
-            .dropna()
-            .astype(str)
-            .unique()
-            .tolist()
-        )
+        groups = load_group_filters()
 
         return jsonify({
             "status": status,
@@ -90,6 +96,53 @@ def search_filter_options():
         return jsonify({
             "error": str(e)
         })
+
+# -----------------------------------
+# SAVE USER GROUP
+# -----------------------------------
+@search_bp.route(
+    "/search/save-group",
+    methods=["POST"]
+)
+def save_group():
+
+    try:
+
+        data = request.json
+
+        group_name = data.get(
+            "group_name",
+            ""
+        ).strip()
+
+        users = data.get(
+            "users",
+            []
+        )
+
+        if not group_name:
+
+            return jsonify({
+                "success": False,
+                "message": "Group name required"
+            })
+
+        save_user_group(
+            group_name,
+            users
+        )
+
+        return jsonify({
+            "success": True
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        })
+
 
 # -----------------------------------
 # Search Issues API
@@ -175,9 +228,18 @@ def search_issues():
         # GROUP FILTER
         # -----------------------------------
         if group:
-            df = df[
-                df["Assigned To"].astype(str) == group
-            ]
+
+            from modules.common.utils.user_group import (
+                build_group_mapping
+            )
+
+            mapping_df = build_group_mapping(df)
+
+            df = filter_dataframe_by_group(
+                df,
+                mapping_df,
+                [group]
+            )
 
         # -----------------------------------
         # DATE FIELD
@@ -291,3 +353,54 @@ def search_issues():
         return jsonify({
             "error": str(e)
         })
+
+
+@search_bp.route("/search/group-members")
+def get_group_members():
+
+    try:
+
+        from modules.common.utils.user_group import (
+            load_group_mapping
+        )
+
+        mapping = load_group_mapping()
+
+        grouped = {}
+
+        for group_name, group_df in mapping.groupby("Group"):
+
+            grouped[group_name] = sorted(
+                group_df["Name"]
+                .dropna()
+                .astype(str)
+                .tolist()
+            )
+
+        return jsonify({
+            "groups": grouped
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "error": str(e)
+        })
+
+@search_bp.route("/search/group-users")
+def get_group_users():
+
+    try:
+
+        users = load_group_users()
+
+        return jsonify({
+            "users": users
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "users": [],
+            "error": str(e)
+        }), 500

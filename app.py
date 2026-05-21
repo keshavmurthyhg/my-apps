@@ -16,6 +16,9 @@ from routes.search_routes import search_bp
 from routes.bulk_routes import bulk_bp
 from modules.excel_compare_v2.layout import excel_compare_bp
 from routes.test_routes import common_layout_bp
+from routes.excel_merge_routes import excel_merge_bp
+
+
 # -----------------------------
 # APP INIT
 # -----------------------------
@@ -52,6 +55,7 @@ app.register_blueprint(search_bp)
 app.register_blueprint(bulk_bp)
 app.register_blueprint(excel_compare_bp, url_prefix="")
 app.register_blueprint(common_layout_bp)
+app.register_blueprint(excel_merge_bp)
 
 # -----------------------------
 # HOME PAGE

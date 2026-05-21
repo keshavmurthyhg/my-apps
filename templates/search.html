@@ -1,5 +1,9 @@
 {% extends "main.html" %}
 
+{% block page_title %}
+Search Module
+{% endblock %}
+
 {% block page_css %}
 <link rel="stylesheet"
       href="{{ url_for('static', filename='css/search.css') }}">
@@ -142,20 +146,81 @@
 <div id="group-section"
      class="dock-section">
 
+    <!-- =========================================
+        USER GROUP MAPPING
+    ========================================= -->
+
     <div class="sidebar-card">
 
         <div class="card-title">
             User Group Mapping
         </div>
 
-        <button class="secondary-btn">
+        <!-- =====================================
+            MANAGE GROUP BUTTON
+        ====================================== -->
+
+        <button
+            class="group-collapse-btn"
+            onclick="toggleManageGroupSection()">
+
             Manage Mapping
         </button>
+
+        <!-- =====================================
+            MANAGE GROUP CONTENT
+        ====================================== -->
+
+        <div
+            id="manageGroupSection"
+            class="group-section-content">
+
+            <input
+                type="text"
+                id="groupNameInput"
+                placeholder="Enter group name">
+
+            <div
+                id="groupUsersContainer"
+                class="group-users-list">
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="saveGroupMapping()">
+
+                Save Group
+            </button>
+
+        </div>
+
+        <!-- =====================================
+            EXISTING GROUPS BUTTON
+        ====================================== -->
+
+        <button
+            class="group-collapse-btn"
+            onclick="toggleExistingGroupsSection()">
+
+            Existing Groups
+        </button>
+
+        <!-- =====================================
+            EXISTING GROUPS CONTENT
+        ====================================== -->
+
+        <div
+            id="existingGroupsSection"
+            class="group-section-content">
+
+            <div id="existingGroupsContainer">
+            </div>
+
+        </div>
 
     </div>
 
 </div>
-
 
 <!-- =========================================
      FILTER SECTION
@@ -467,11 +532,6 @@
 
     </div>
 
-    <button id="clearBtn"
-            class="secondary-btn">
-        ✕
-    </button>
-
 </div>
 
 
@@ -479,33 +539,70 @@
 <div class="search-results-container">
     
     <div class="table-scroll-wrapper">
-        
         <table id="searchResultsTable">
+            
+            <colgroup>
+                <col id="col-slno">
+                <col id="col-number">
+                <col id="col-description">
+                <col id="col-priority">
+                <col id="col-status">
+                <col id="col-createdby">
+                <col id="col-createddate">
+                <col id="col-assignedto">
+                <col id="col-resolveddate">
+            </colgroup>
 
             <thead>
                 <tr>
-                    <th>SL No</th>
-                    <th>Number</th>
-                    <th>Description</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Created By</th>
-                    <th>Created Date</th>
-                    <th>Assigned To</th>
-                    <th>Resolved Date</th>
-        
+                    <th data-column="slno">
+                        SL No
+                        <div class="resize-handle"></div>
+                    </th>
+
+                    <th data-column="number">
+                        Number
+                        <div class="resize-handle"></div>
+                    </th>
+
+                    <th data-column="description">
+                        Description
+                        <div class="resize-handle"></div>
+                    </th>
+
+                    <th data-column="priority">
+                        Priority
+                        <div class="resize-handle"></div>
+                    </th>
+
+                    <th data-column="status">
+                        Status
+                        <div class="resize-handle"></div>
+                    </th>
+
+                    <th data-column="createdby">
+                        Created By
+                        <div class="resize-handle"></div>
+                    </th>
+
+                    <th data-column="createddate">
+                        Created Date
+                        <div class="resize-handle"></div>
+                    </th>
+
+                    <th data-column="assignedto">
+                        Assigned To
+                        <div class="resize-handle"></div>
+                    </th>
+
+                    <th data-column="resolveddate">
+                        Resolved Date
+                        <div class="resize-handle"></div>
+                    </th>
                 </tr>
             </thead>
 
             <tbody id="searchResultsBody">
-
-                <tr>
-                    <td colspan="9"
-                        class="empty-search-message">
-                        Search results will appear here
-                    </td>
-                </tr>
-
             </tbody>
 
         </table>
@@ -548,5 +645,6 @@
 
 
 {% block page_js %}
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 {% endblock %}

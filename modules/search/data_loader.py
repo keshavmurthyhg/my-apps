@@ -5,6 +5,12 @@ from modules.common.utils.parsers import (
     normalize_priority
 )
 
+from modules.common.utils.user_group import (
+    build_group_mapping,
+    filter_dataframe_by_group,
+    get_available_groups
+)
+
 # -------------------------------
 # NORMALIZE COLUMN NAMES
 # -------------------------------
@@ -130,3 +136,56 @@ def load_data():
     info = datetime.now().strftime("%d-%b-%Y %H:%M")
 
     return df, info
+
+
+# -------------------------------
+# LOAD GROUP FILTERS
+# -------------------------------
+def load_group_filters():
+
+    df, _ = load_data()
+
+    mapping_df = build_group_mapping(df)
+
+    groups = get_available_groups(
+        mapping_df
+    )
+
+    return groups
+
+
+def load_group_users():
+
+    import pandas as pd
+
+    from pathlib import Path
+
+    csv_path = (
+        Path("data") /
+        "group_mapping.csv"
+    )
+
+    if not csv_path.exists():
+        return []
+
+    df = pd.read_csv(csv_path)
+
+    users = set()
+
+    if "Name" in df.columns:
+
+        df["Name"] = (
+            df["Name"]
+            .fillna("")
+            .astype(str)
+            .str.strip()
+        )
+
+        users.update(
+            df["Name"]
+            .tolist()
+        )
+
+    return sorted(
+        x for x in users if x
+    )
