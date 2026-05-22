@@ -287,7 +287,31 @@ function downloadFailedReport() {
 ------------------------- */
 
 function resendFailedJobs() {
-    alert("Retrying failed jobs...");
+
+    const failedRows =
+        document.querySelectorAll(".status-failed");
+
+    if (failedRows.length === 0) {
+        alert("No failed jobs found");
+        return;
+    }
+
+    let failedIncidents = [];
+
+    failedRows.forEach(row => {
+        const tr = row.closest("tr");
+
+        if (tr) {
+            failedIncidents.push(
+                tr.children[1].innerText.trim()
+            );
+        }
+    });
+
+    document.getElementById("bulk_incidents").value =
+        failedIncidents.join(", ");
+
+    generateBulkReports();
 }
 
 

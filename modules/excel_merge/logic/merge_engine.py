@@ -15,6 +15,8 @@ def merge_dataframes(
     updated_records = []
     new_records = []
 
+    updated_cells = {}
+
     merged_df = old_df.copy()
 
     existing_keys = set(old_df[key_column].tolist())
@@ -25,44 +27,34 @@ def merge_dataframes(
 
         if key_value in existing_keys:
 
-            old_row = merged_df[merged_df[key_column] == key_value].iloc[0]
+            old_row = merged_df[
+                merged_df[key_column] == key_value
+            ].iloc[0]
 
-            if not old_row.equals(new_row):
+            changed_columns = []
 
-                if latest_logic == 'new_file':
+            for col in merged_df.columns:
 
-                    merged_df = merged_df[
-                        merged_df[key_column] != key_value
-                    ]
+                old_val = str(old_row[col]).strip()
+                new_val = str(new_row[col]).strip()
 
-                    merged_df = pd.concat([
-                        merged_df,
-                        pd.DataFrame([new_row])
-                    ], ignore_index=True)
+                if old_val != new_val:
+                    changed_columns.append(col)
 
-                    updated_records.append(new_row)
+            if changed_columns:
 
-                elif latest_logic == 'date_column' and date_column:
+                merged_df = merged_df[
+                    merged_df[key_column] != key_value
+                ]
 
-                    try:
-                        old_date = pd.to_datetime(old_row[date_column])
-                        new_date = pd.to_datetime(new_row[date_column])
+                merged_df = pd.concat([
+                    merged_df,
+                    pd.DataFrame([new_row])
+                ], ignore_index=True)
 
-                        if new_date > old_date:
+                updated_records.append(new_row)
 
-                            merged_df = merged_df[
-                                merged_df[key_column] != key_value
-                            ]
-
-                            merged_df = pd.concat([
-                                merged_df,
-                                pd.DataFrame([new_row])
-                            ], ignore_index=True)
-
-                            updated_records.append(new_row)
-
-                    except:
-                        pass
+                updated_cells[key_value] = changed_columns
 
         else:
 
@@ -74,6 +66,12 @@ def merge_dataframes(
             new_records.append(new_row)
 
     updated_df = pd.DataFrame(updated_records)
+
     new_records_df = pd.DataFrame(new_records)
 
-    return merged_df, updated_df, new_records_df
+    return (
+        merged_df,
+        updated_df,
+        new_records_df,
+        updated_cells
+    )

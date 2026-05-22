@@ -70,9 +70,13 @@ def add_images_pdf(elements, images):
                 )
             )
 
-            elements.append(
-                Spacer(1, 15)
-            )
+            # allow image splitting safely
+            img.hAlign = "CENTER"
+
+            elements.append(img)
+
+            # smaller spacer
+            elements.append(Spacer(1, 8))
 
         except Exception:
             continue
