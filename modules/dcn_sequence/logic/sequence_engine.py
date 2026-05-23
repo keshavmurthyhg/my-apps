@@ -1,66 +1,113 @@
-import pandas as pd
 import re
+import pandas as pd
 
 
+# =========================================================
+# EXTRACT NUMERIC DCN VALUES
+# =========================================================
 def extract_dcn_numbers(df):
+
     """
-    Extract numeric DCN values from Number column.
+    Extract numeric values from Number column.
+
+    Example:
+    104121WC -> 104121
     """
 
-    if 'Number' not in df.columns:
-        raise ValueError("'Number' column not found")
+    if "Number" not in df.columns:
 
-    dcn_series = (
-        df['Number']
+        raise ValueError(
+            "'Number' column not found in Excel"
+        )
+
+    series = (
+        df["Number"]
         .astype(str)
         .str.strip()
     )
 
     numeric_values = []
 
-    for value in dcn_series:
-        match = re.search(r'(\d+)', value)
+    for value in series:
+
+        match = re.search(
+            r"(\d+)",
+            value
+        )
 
         if match:
-            numeric_values.append(int(match.group(1)))
 
-    numeric_values = sorted(set(numeric_values))
+            numeric_values.append(
+                int(match.group(1))
+            )
+
+    numeric_values = sorted(
+        list(set(numeric_values))
+    )
 
     return numeric_values
 
 
-
+# =========================================================
+# FIND MISSING NUMBERS
+# =========================================================
 def find_missing_sequences(numbers):
+
     """
-    Find missing sequence numbers.
+    Find missing sequence values.
+
+    Example:
+    [1,2,5] -> [3,4]
     """
 
     missing = []
 
-    for current, next_num in zip(numbers, numbers[1:]):
+    if not numbers:
+        return missing
+
+    for current, next_num in zip(
+        numbers,
+        numbers[1:]
+    ):
 
         if next_num - current > 1:
 
-            for val in range(current + 1, next_num):
-                missing.append(val)
+            for value in range(
+                current + 1,
+                next_num
+            ):
+
+                missing.append(value)
 
     return missing
 
 
-
+# =========================================================
+# BUILD OUTPUT DATAFRAME
+# =========================================================
 def build_missing_dataframe(missing_numbers):
+
     """
-    Build output dataframe.
+    Create output dataframe.
     """
 
-    output = []
+    rows = []
 
-    for idx, number in enumerate(missing_numbers, start=1):
+    for index, number in enumerate(
+        missing_numbers,
+        start=1
+    ):
 
-        output.append({
-            'SL NO': idx,
-            'Missing DCN Number': f'{number}WC',
-            'Numeric Value': number
+        rows.append({
+
+            "SL NO": index,
+
+            "Missing DCN Number":
+                f"{number}WC",
+
+            "Numeric Value":
+                number
+
         })
 
-    return pd.DataFrame(output)
+    return pd.DataFrame(rows)
