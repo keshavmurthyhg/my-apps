@@ -6,7 +6,7 @@ let monthlyChartInstance = null;
 // ======================================================
 document.addEventListener(
     "DOMContentLoaded",
-    function () {
+    () => {
 
         initializeDashboard();
 
@@ -21,6 +21,10 @@ function initializeDashboard() {
 
     bindEvents();
 
+    showSidebarPanel("kpi");
+
+    handleDateFilterType();
+
     loadDashboard();
 
 }
@@ -31,17 +35,212 @@ function initializeDashboard() {
 // ======================================================
 function bindEvents() {
 
-    const refreshBtn =
-        document.getElementById(
-            "refreshBtn"
-        );
-
-    if (refreshBtn) {
-
-        refreshBtn.addEventListener(
+    // ==========================================
+    // REFRESH
+    // ==========================================
+    document
+        .getElementById("refreshBtn")
+        ?.addEventListener(
             "click",
             loadDashboard
         );
+
+
+    // ==========================================
+    // APPLY FILTERS
+    // ==========================================
+    document
+        .getElementById("applyFiltersBtn")
+        ?.addEventListener(
+            "click",
+            applyDashboardFilters
+        );
+
+
+    // ==========================================
+    // DOWNLOAD BUTTONS
+    // ==========================================
+    document
+        .getElementById("downloadMonthlyBtn")
+        ?.addEventListener(
+            "click",
+            downloadMonthlyReport
+        );
+
+    document
+        .getElementById("downloadDailyBtn")
+        ?.addEventListener(
+            "click",
+            downloadDailyReport
+        );
+
+}
+
+
+// ======================================================
+// SIDEBAR PANEL SWITCH
+// ======================================================
+function showSidebarPanel(type) {
+
+    // ==========================================
+    // REMOVE ACTIVE
+    // ==========================================
+    document
+        .querySelectorAll(".dock-item")
+        .forEach(item => {
+
+            item.classList.remove(
+                "active-dock"
+            );
+
+        });
+
+
+    // ==========================================
+    // HIDE PANELS
+    // ==========================================
+    document
+        .querySelectorAll(".dock-section")
+        .forEach(section => {
+
+            section.classList.remove(
+                "active-section"
+            );
+
+        });
+
+
+    // ==========================================
+    // KPI
+    // ==========================================
+    if (type === "kpi") {
+
+        document
+            .getElementById("kpi-section")
+            ?.classList.add(
+                "active-section"
+            );
+
+        document
+            .getElementById("kpiDockBtn")
+            ?.classList.add(
+                "active-dock"
+            );
+
+    }
+
+
+    // ==========================================
+    // FILTER
+    // ==========================================
+    else if (type === "filter") {
+
+        document
+            .getElementById("filter-section")
+            ?.classList.add(
+                "active-section"
+            );
+
+        document
+            .getElementById("filterDockBtn")
+            ?.classList.add(
+                "active-dock"
+            );
+
+    }
+
+
+    // ==========================================
+    // DOWNLOAD
+    // ==========================================
+    else if (type === "download") {
+
+        document
+            .getElementById("download-section")
+            ?.classList.add(
+                "active-section"
+            );
+
+        document
+            .getElementById("downloadDockBtn")
+            ?.classList.add(
+                "active-dock"
+            );
+
+    }
+
+}
+
+
+// ======================================================
+// FILTER TYPE HANDLER
+// ======================================================
+function handleDateFilterType() {
+
+    // ==========================================
+    // HIDE ALL
+    // ==========================================
+    document
+        .querySelectorAll(".date-sub-section")
+        .forEach(section => {
+
+            section.classList.remove(
+                "active-date-section"
+            );
+
+        });
+
+
+    const filterType =
+        document.getElementById(
+            "dateFilterType"
+        )?.value;
+
+
+    // ==========================================
+    // RANGE
+    // ==========================================
+    if (filterType === "range") {
+
+        document
+            .getElementById(
+                "dateRangeSection"
+            )
+            ?.classList.add(
+                "active-date-section"
+            );
+
+    }
+
+
+    // ==========================================
+    // YEAR
+    // ==========================================
+    else if (filterType === "year") {
+
+        document
+            .getElementById(
+                "yearSection"
+            )
+            ?.classList.add(
+                "active-date-section"
+            );
+
+    }
+
+
+    // ==========================================
+    // QUICK
+    // ==========================================
+    else if (filterType === "quick") {
+
+        document
+            .getElementById(
+                "quickSection"
+            )
+            ?.classList.add(
+                "active-date-section"
+            );
 
     }
 
@@ -56,7 +255,8 @@ async function loadDashboard() {
     try {
 
         updateProcessingStatus(
-            "Loading dashboard..."
+            "Loading dashboard...",
+            "processing"
         );
 
         const response = await fetch(
@@ -70,14 +270,17 @@ async function loadDashboard() {
         if (!data.success) {
 
             updateProcessingStatus(
-                data.message
+                data.message || "Failed to load dashboard",
+                "failed"
             );
 
             return;
 
         }
 
-        renderKPI(data.kpi);
+        renderKPI(
+            data.kpi
+        );
 
         renderMonthlyChart(
             data.chart_data
@@ -92,7 +295,8 @@ async function loadDashboard() {
         );
 
         updateProcessingStatus(
-            "Dashboard loaded successfully"
+            "Dashboard loaded successfully",
+            "completed"
         );
 
     }
@@ -101,7 +305,8 @@ async function loadDashboard() {
         console.error(error);
 
         updateProcessingStatus(
-            error.message
+            error.message,
+            "failed"
         );
 
     }
@@ -129,7 +334,7 @@ function renderKPI(kpi) {
     ).innerHTML = `
 
         <div class="kpi-latest-dcn">
-            ${kpi.latest_dcn}
+            ${kpi.latest_dcn || "-"}
         </div>
 
     `;
@@ -143,7 +348,7 @@ function renderKPI(kpi) {
 
 
 // ======================================================
-// CHART
+// MONTHLY CHART
 // ======================================================
 function renderMonthlyChart(chartData) {
 
@@ -157,6 +362,9 @@ function renderMonthlyChart(chartData) {
     const ctx =
         canvas.getContext("2d");
 
+    // ==========================================
+    // DESTROY OLD
+    // ==========================================
     if (monthlyChartInstance) {
 
         monthlyChartInstance.destroy();
@@ -175,7 +383,8 @@ function renderMonthlyChart(chartData) {
 
         "#4e79a7",
         "#f28e2b",
-        "#e15759"
+        "#e15759",
+        "#bab0ac"
 
     ];
 
@@ -237,7 +446,13 @@ function renderMonthlyChart(chartData) {
 
                 y: {
 
-                    beginAtZero: true
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        precision: 0
+
+                    }
 
                 }
 
@@ -247,6 +462,7 @@ function renderMonthlyChart(chartData) {
 
     });
 
+    window.dispatchEvent(new Event("resize"));
 }
 
 
@@ -269,7 +485,7 @@ function renderPivotTable(rows) {
         tbody.innerHTML = `
 
             <tr>
-                <td colspan="10">
+                <td colspan="5">
                     No pivot data
                 </td>
             </tr>
@@ -281,16 +497,22 @@ function renderPivotTable(rows) {
 
     rows.forEach(row => {
 
-        let tr =
+        const tr =
             document.createElement("tr");
 
-        Object.values(row).forEach(value => {
+        tr.innerHTML = `
 
-            tr.innerHTML += `
-                <td>${value}</td>
-            `;
+            <td>${row.Month || "-"}</td>
 
-        });
+            <td>${row["2023"] || 0}</td>
+
+            <td>${row["2024"] || 0}</td>
+
+            <td>${row["2025"] || 0}</td>
+
+            <td>${row["2026"] || 0}</td>
+
+        `;
 
         tbody.appendChild(tr);
 
@@ -337,13 +559,13 @@ function renderDailySummary(rows) {
 
             <td>${index + 1}</td>
 
-            <td>${row.Date}</td>
+            <td>${row.Date || "-"}</td>
 
-            <td>${row["Total DCNs"]}</td>
+            <td>${row["Total DCNs"] || 0}</td>
 
-            <td>${row["Sequence Skipped"]}</td>
+            <td>${row["Sequence Skipped"] || 0}</td>
 
-            <td>${row["Skipped DCN Numbers"]}</td>
+            <td>${row["Skipped DCN Numbers"] || "-"}</td>
 
         `;
 
@@ -355,25 +577,261 @@ function renderDailySummary(rows) {
 
 
 // ======================================================
-// STATUS
+// APPLY FILTERS
 // ======================================================
-function updateProcessingStatus(message) {
+// ======================================================
+// APPLY FILTERS
+// ======================================================
+async function applyDashboardFilters() {
 
-    const status =
-        document.getElementById(
-            "processingStatus"
+    try {
+
+        updateProcessingStatus(
+            "Applying filters...",
+            "processing"
         );
 
-    if (!status) return;
+        // ==========================================
+        // GET FILTER VALUES
+        // ==========================================
+        const dateField =
+            document.getElementById("dateFieldSelect")?.value || "";
+
+        const filterType =
+            document.getElementById("dateFilterType")?.value || "";
+
+        const startDate =
+            document.getElementById("startDateInput")?.value || "";
+
+        const endDate =
+            document.getElementById("endDateInput")?.value || "";
+
+        const selectedYear =
+            document.getElementById("yearSelect")?.value || "";
+
+        const quickOption =
+            document.querySelector(
+                'input[name="quickFilterRadio"]:checked'
+            )?.value || "";
+
+
+        // ==========================================
+        // PAYLOAD
+        // ==========================================
+        const payload = {
+
+            date_field: dateField,
+
+            filter_type: filterType,
+
+            start_date: startDate,
+
+            end_date: endDate,
+
+            year: selectedYear,
+
+            quick_option: quickOption
+
+        };
+
+        console.log("FILTER PAYLOAD:", payload);
+
+
+        // ==========================================
+        // API CALL
+        // ==========================================
+        const response = await fetch(
+            "/api/dcn-analytics/apply-filters",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(payload)
+            }
+        );
+
+        const data = await response.json();
+
+        console.log(data);
+
+
+        // ==========================================
+        // FAILED
+        // ==========================================
+        if (!data.success) {
+
+            updateProcessingStatus(
+                data.message || "Filter failed",
+                "failed"
+            );
+
+            return;
+        }
+
+
+        // ==========================================
+        // REFRESH DASHBOARD
+        // ==========================================
+        renderKPI(
+            data.kpi
+        );
+
+        renderMonthlyChart(
+            data.chart_data
+        );
+
+        renderPivotTable(
+            data.monthly_pivot
+        );
+
+        renderDailySummary(
+            data.daily_summary
+        );
+
+
+        // ==========================================
+        // SUCCESS
+        // ==========================================
+        updateProcessingStatus(
+            "Filters applied successfully",
+            "completed"
+        );
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        updateProcessingStatus(
+            error.message,
+            "failed"
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// DOWNLOADS
+// ======================================================
+function downloadMonthlyReport() {
+
+    window.open(
+        "/api/dcn-analytics/download/monthly",
+        "_blank"
+    );
+
+}
+
+
+function downloadDailyReport() {
+
+    window.open(
+        "/api/dcn-analytics/download/daily",
+        "_blank"
+    );
+
+}
+
+
+// ======================================================
+// STATUS
+// ======================================================
+function updateProcessingStatus(
+    message,
+    type = "processing"
+) {
+
+    const wrapper =
+        document.getElementById(
+            "progressWrapper"
+        );
+
+    const statusMessage =
+        document.getElementById(
+            "statusMessage"
+        );
+
+    const progressText =
+        document.getElementById(
+            "progressText"
+        );
+
+    const progressFill =
+        document.getElementById(
+            "progressFill"
+        );
+
+    if (
+        !wrapper ||
+        !statusMessage ||
+        !progressText ||
+        !progressFill
+    ) {
+        return;
+    }
+
+    wrapper.classList.remove(
+        "hidden"
+    );
 
     const time =
         new Date().toLocaleTimeString();
 
-    status.innerHTML = `
+    progressText.innerHTML =
+        `[${time}] ${message}`;
 
-        [${time}] ${message}
+    // ==========================================
+    // PROCESSING
+    // ==========================================
+    if (type === "processing") {
 
-    `;
+        statusMessage.innerText =
+            "Processing...";
+
+        progressFill.style.width =
+            "60%";
+
+        progressFill.style.background =
+            "linear-gradient(90deg,#22c55e,#4ade80)";
+
+    }
+
+    // ==========================================
+    // COMPLETED
+    // ==========================================
+    else if (type === "completed") {
+
+        statusMessage.innerText =
+            "Completed";
+
+        progressFill.style.width =
+            "100%";
+
+        progressFill.style.background =
+            "linear-gradient(90deg,#22c55e,#16a34a)";
+
+    }
+
+    // ==========================================
+    // FAILED
+    // ==========================================
+    else if (type === "failed") {
+
+        statusMessage.innerText =
+            "Failed";
+
+        progressFill.style.width =
+            "100%";
+
+        progressFill.style.background =
+            "linear-gradient(90deg,#ef4444,#dc2626)";
+
+    }
 
 }
 

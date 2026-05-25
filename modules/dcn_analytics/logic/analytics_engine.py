@@ -4,19 +4,16 @@ import pandas as pd
 from modules.common.utils.parsers import (
     clean_empty_values
 )
-
+from modules.dcn_analytics.utils.dcn_parsers import (
+    prepare_dcn_dataframe
+)
 
 # =========================================================
 # PREPARE DATAFRAME
 # =========================================================
 def prepare_dataframe(df):
 
-    df.columns = [
-        str(col).strip()
-        for col in df.columns
-    ]
-
-    df = clean_empty_values(df)
+    df = prepare_dcn_dataframe(df)
 
     return df
 
@@ -42,239 +39,71 @@ def extract_numeric_dcn(value):
 # =========================================================
 def build_daily_summary(df):
 
-    # =====================================================
-    # CLEAN TYPE COLUMN
-    # =====================================================
-    df["Object Type Indicator"] = (
+    missing_rows = []
 
-        df["Object Type Indicator"]
+    for i in range(len(df) - 1):
 
-        .fillna("")
+        current_num = int(df.iloc[i]["DCN_NUM"])
+        next_num = int(df.iloc[i + 1]["DCN_NUM"])
 
-        .astype(str)
+        current_date = df.iloc[i]["Created Date"]
 
-        .str.strip()
+        gap = next_num - current_num
 
-        .str.lower()
-
-    )
-
-    # =====================================================
-    # FILTER ONLY DCN
-    # =====================================================
-    df = df[
-
-        df["Object Type Indicator"]
-
-        .str.contains(
-            "design change notice",
-            case=False,
-            na=False
-        )
-
-    ].copy()
-
-    # =====================================================
-    # EMPTY CHECK
-    # =====================================================
-    if df.empty:
-
-        return pd.DataFrame(columns=[
-
-            "Date",
-
-            "Total DCNs",
-
-            "Sequence Skipped",
-
-            "Skipped DCN Numbers"
-
-        ])
-
-    # =====================================================
-    # CLEAN CREATED ON
-    # =====================================================
-    df["Created On"] = (
-
-        df["Created On"]
-
-        .astype(str)
-
-        .str.replace(
-            "CEST",
-            "",
-            regex=False
-        )
-
-        .str.strip()
-
-    )
-
-    # =====================================================
-    # DATE PARSE
-    # =====================================================
-    df["Created Date"] = pd.to_datetime(
-
-        df["Created On"],
-
-        format="%Y-%m-%d %H:%M",
-
-        errors="coerce"
-
-    )
-
-    # =====================================================
-    # REMOVE INVALID DATES
-    # =====================================================
-    df = df.dropna(
-        subset=["Created Date"]
-    )
-
-    # =====================================================
-    # CONVERT DATE
-    # =====================================================
-    df["Created Date"] = (
-        pd.to_datetime(
-            df["Created Date"]
-        ).dt.date
-    )
-
-    # =====================================================
-    # NUMERIC DCN
-    # =====================================================
-    df["Numeric DCN"] = df["Number"].apply(
-        extract_numeric_dcn
-    )
-
-    # =====================================================
-    # REMOVE EMPTY NUMBERS
-    # =====================================================
-    df = df.dropna(
-        subset=["Numeric DCN"]
-    )
-
-    # =====================================================
-    # EMPTY AFTER CLEAN
-    # =====================================================
-    if df.empty:
-
-        return pd.DataFrame(columns=[
-
-            "Date",
-
-            "Total DCNs",
-
-            "Sequence Skipped",
-
-            "Skipped DCN Numbers"
-
-        ])
-
-    # =====================================================
-    # GROUP DAILY
-    # =====================================================
-    summary_rows = []
-
-    grouped = df.groupby(
-        "Created Date"
-    )
-
-    for created_date, group in grouped:
-
-        numbers = sorted(
-
-            [
-                int(x)
-                for x in group["Numeric DCN"].unique()
-            ]
-
-        )
-
-        missing = []
-
-        for current, next_num in zip(
-            numbers,
-            numbers[1:]
-        ):
-
-            if next_num - current > 1:
-
-                for value in range(
-                    current + 1,
-                    next_num
-                ):
-
-                    missing.append(value)
-
-        if pd.isna(created_date):
+        # Ignore duplicates
+        if gap <= 1:
             continue
 
-        summary_rows.append({
+        # Ignore unrealistic jumps
+        if gap > 5:
+            continue
+
+        missing_numbers = []
+
+        for n in range(
+            current_num + 1,
+            next_num
+        ):
+            missing_numbers.append(
+                f"{n}WC"
+            )
+
+        missing_rows.append({
 
             "Date":
-                pd.to_datetime(
-                    created_date
-                ).strftime("%d-%b-%Y"),
+                current_date.strftime("%d-%b-%Y"),
+
+            "Month":
+                current_date.strftime("%b"),
+
+            "Year":
+                int(current_date.year),
 
             "Total DCNs":
-                int(len(numbers)),
+                1,
 
             "Sequence Skipped":
-                int(len(missing)),
+                len(missing_numbers),
 
             "Skipped DCN Numbers":
-                ", ".join(
-                    [
-                        f"{x}WC"
-                        for x in missing
-                    ]
-                )
-
+                ", ".join(missing_numbers)
         })
 
-    # =====================================================
-    # FINAL DATAFRAME
-    # =====================================================
-    summary_df = pd.DataFrame(
-        summary_rows
-    )
-
-    # =====================================================
-    # SORT
-    # =====================================================
-    if not summary_df.empty:
-
-        summary_df["DateObj"] = pd.to_datetime(
-
-            summary_df["Date"],
-
-            format="%d-%b-%Y",
-
-            errors="coerce"
-
-        )
-
-        summary_df = summary_df.sort_values(
-            by="DateObj"
-        )
-
-        summary_df = summary_df.drop(
-            columns=["DateObj"]
-        )
-
-    return summary_df
+    return pd.DataFrame(missing_rows)
 
 
 # =========================================================
-# BUILD MONTHLY CHART DATA
+# MONTHLY CHART
 # =========================================================
 def build_monthly_chart_data(summary_df):
 
     if summary_df.empty:
 
         return {
+
             "labels": [],
             "datasets": []
+
         }
 
     summary_df["DateObj"] = pd.to_datetime(
@@ -303,18 +132,10 @@ def build_monthly_chart_data(summary_df):
 
     month_order = [
 
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
+        "Jan", "Feb", "Mar",
+        "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep",
+        "Oct", "Nov", "Dec"
 
     ]
 
@@ -339,9 +160,14 @@ def build_monthly_chart_data(summary_df):
         fill_value=0
     )
 
+    available_years = sorted(
+        pivot_df.columns.tolist()
+    )
+
+    
     datasets = []
 
-    for year in pivot_df.columns:
+    for year in available_years:
 
         datasets.append({
 
@@ -366,7 +192,7 @@ def build_monthly_chart_data(summary_df):
 
 
 # =========================================================
-# BUILD MONTHLY PIVOT TABLE
+# MONTHLY PIVOT
 # =========================================================
 def build_monthly_pivot(summary_df):
 
@@ -381,10 +207,6 @@ def build_monthly_pivot(summary_df):
 
         errors="coerce"
 
-    )
-
-    summary_df = summary_df.dropna(
-        subset=["DateObj"]
     )
 
     summary_df["Month"] = (
@@ -415,18 +237,10 @@ def build_monthly_pivot(summary_df):
 
     month_order = [
 
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
+        "Jan", "Feb", "Mar",
+        "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep",
+        "Oct", "Nov", "Dec"
 
     ]
 
@@ -437,13 +251,25 @@ def build_monthly_pivot(summary_df):
 
     pivot_df = pivot_df.reset_index()
 
+    # Ensure Month is first column
+    ordered_columns = ["Month"] + [
+
+        col for col in pivot_df.columns
+
+        if col != "Month"
+    ]
+
+    pivot_df = pivot_df[
+        ordered_columns
+    ]
+
     return pivot_df.to_dict(
         orient="records"
     )
 
 
 # =========================================================
-# BUILD KPI
+# KPI
 # =========================================================
 def build_kpi(summary_df):
 
@@ -452,11 +278,8 @@ def build_kpi(summary_df):
         return {
 
             "total_missing": 0,
-
             "current_month": 0,
-
             "latest_dcn": "-",
-
             "last_updated": "-"
 
         }
@@ -483,11 +306,8 @@ def build_kpi(summary_df):
     return {
 
         "total_missing": total_missing,
-
         "current_month": current_month,
-
         "latest_dcn": latest_dcn,
-
         "last_updated": last_updated
 
     }

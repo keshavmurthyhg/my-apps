@@ -1,77 +1,347 @@
+/* =========================================================
+   DASHBOARD LAYOUT
+========================================================= */
+
 .dashboard-wrapper {
-    padding: 20px;
+    padding: 18px;
+
+    height: calc(100vh - 108px);
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+
+    box-sizing: border-box;
 }
 
 
-/* ===================================================== */
-/* KPI GRID */
-/* ===================================================== */
+/* =========================================================
+   TOP ANALYTICS GRID
+========================================================= */
 
-.kpi-grid {
-
+.analytics-top-grid {
     display: grid;
 
-    grid-template-columns:
-        repeat(4, 1fr);
+    grid-template-columns: 1.65fr 0.95fr;
 
-    gap: 20px;
+    gap: 18px;
 
-    margin-bottom: 20px;
-}
+    height: 42vh;
 
-.kpi-card {
-
-    background: white;
-
-    border-radius: 10px;
-
-    padding: 20px;
-
-    border: 1px solid #dcdcdc;
-}
-
-.kpi-title {
-
-    font-size: 14px;
-
-    color: #666;
-
-    margin-bottom: 10px;
-}
-
-.kpi-value {
-
-    font-size: 28px;
-
-    font-weight: bold;
-
-    color: #0078d4;
-}
-
-
-/* ===================================================== */
-/* DASHBOARD CARD */
-/* ===================================================== */
-
-.dashboard-card {
-
-    background: white;
-
-    border-radius: 10px;
-
-    border: 1px solid #dcdcdc;
-
-    margin-bottom: 20px;
+    min-height: 0;
 
     overflow: hidden;
 }
 
-.card-title {
 
+/* =========================================================
+   FIXED CARDS
+========================================================= */
+
+.fixed-card {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   TABLE SCROLL
+========================================================= */
+
+.table-scroll-wrapper {
+    flex: 1;
+
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+
+/* =========================================================
+   DAILY SUMMARY FIXED
+========================================================= */
+
+.daily-summary-card {
+    height: calc(100vh - 610px);
+
+    min-height: 260px;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+/* =========================================================
+   CHART FIX
+========================================================= */
+
+.chart-card {
+    height: 100%;
+}
+
+.chart-wrapper {
+    position: relative;
+
+    width: 100%;
+
+    height: calc(100% - 58px);
+
+    padding: 14px 18px 18px 18px;
+
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.toolbar-btn {
+    height: 36px;
+    padding: 0 18px;
+
+    border: none;
+    border-radius: 6px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.primary-btn {
+    background: #0078d4;
+    color: white;
+}
+
+.upload-toolbar-btn {
+    height: 36px;
+    min-width: 180px;
+
+    background: #445b7c;
+    color: white;
+
+    border-radius: 6px;
+
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   DOCK ITEM
+   USE COMMON FRAMEWORK BEHAVIOR
+========================================================= */
+
+.dock-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 52px;
+
+    cursor: pointer;
+}
+
+.active-dock {
+    background: rgba(255,255,255,0.12);
+    border-left: 3px solid #4da3ff;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.module-sidebar-section {
+    padding: 8px 18px 18px 18px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* hide sidebar content when collapsed */
+.sidebar-collapsed .module-sidebar-section {
+    display: none;
+}
+
+/* keep processing visible */
+.sidebar-collapsed .processing-status {
+    display: block;
+}
+
+
+/* =========================================================
+   KPI SECTION
+========================================================= */
+
+.sidebar-kpi-title {
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+
+    text-align: left;
+
+    margin-bottom: 24px;
+}
+
+.sidebar-kpi-grid {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+
+    width: 100%;
+
+    margin-bottom: 20px;
+}
+
+.sidebar-kpi-card {
+    width: 110px;
+    height: 92px;
+
+    background: rgba(255,255,255,0.08);
+
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-kpi-label {
+    color: white;
+    font-size: 12px;
+
+    margin-bottom: 6px;
+}
+
+.sidebar-kpi-value {
+    color: white;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    text-align: center;
+}
+
+.success-kpi {
+    color: #4ade80;
+}
+
+
+/* =========================================================
+   LATEST DCN
+========================================================= */
+
+.latest-dcn-wrapper {
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 14px;
+
+    background: rgba(255,255,255,0.05);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 10px;
+
+    box-sizing: border-box;
+}
+
+.latest-dcn-title {
+    color: #9eb6d8;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-align: center;
+
+    margin-bottom: 12px;
+}
+
+.latest-dcn-list {
+    color: #ff6b6b;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    line-height: 1.7;
+
+    text-align: center;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   LAST UPDATED
+========================================================= */
+
+.sidebar-last-updated {
+    margin-top: 22px;
+
+    text-align: center;
+
+    color: #9eb6d8;
+
+    font-size: 13px;
+
+    line-height: 1.8;
+}
+
+.sidebar-last-updated span {
+    display: block;
+
+    color: white;
+
+    font-weight: 700;
+
+    margin-top: 6px;
+}
+
+
+/* =========================================================
+   DASHBOARD CARD
+========================================================= */
+
+.dashboard-card {
+    background: white;
+
+    border: 1px solid #dcdcdc;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    margin-bottom: 22px;
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.card-title,
+.card-header {
     padding: 16px 20px;
 
     font-size: 16px;
-
     font-weight: 600;
 
     border-bottom: 1px solid #e0e0e0;
@@ -79,310 +349,52 @@
     background: #fafafa;
 }
 
-.chart-placeholder {
 
-    height: 400px;
+/* =========================================================
+   CHART FIXED HEIGHT
+========================================================= */
 
-    display: flex;
+.chart-card {
+    height: 100%;
 
-    align-items: center;
-
-    justify-content: center;
-
-    color: #777;
+    min-height: 0;
 }
 
-.placeholder-table {
-
-    height: 250px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    color: #777;
-}
-
-
-/* ===================================================== */
-/* TOOLBAR */
-/* ===================================================== */
-
-.toolbar-btn {
-
-    padding: 9px 16px;
-
-    border-radius: 6px;
-
-    border: none;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-    font-weight: 600;
-}
-
-.primary-btn {
-
-    background: #0078d4;
-
-    color: white;
-}
-
-
-/* ===================================================== */
-/* UPLOAD BUTTON */
-/* ===================================================== */
-
-.upload-toolbar-btn {
-
-    background: #445b7c;
-
-    color: white;
-
-    padding: 9px 18px;
-
-    border-radius: 6px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    min-width: 180px;
-}
-
-
-/* ===================================================== */
-/* SIDEBAR */
-/* ===================================================== */
-
-.module-sidebar-section {
-    padding: 16px;
-}
-
-.sidebar-info-card {
-
-    margin-top: 25px;
-
-    padding: 14px;
-
-    border-radius: 8px;
-
-    background: rgba(255,255,255,0.05);
-
-    border: 1px solid rgba(255,255,255,0.08);
-}
-
-.sidebar-info-title {
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    color: white;
-
-    margin-bottom: 10px;
-}
-
-.sidebar-info-text {
-
-    font-size: 13px;
-
-    line-height: 1.6;
-
-    color: #b7c6db;
-}
-
-
-/* ===================================================== */
-/* DOCK ICON */
-/* ===================================================== */
-
-.dock-icon {
-
-    width: 42px;
-
-    height: 42px;
-
-    margin: 10px auto;
-
-    border-radius: 8px;
-
-    background: rgba(255,255,255,0.08);
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    color: white;
-
-    font-size: 18px;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
-}
-
-.dock-icon:hover {
-
-    background: rgba(255,255,255,0.16);
-}
-
-/* ===================================================== */
-/* SIDEBAR KPI */
-/* ===================================================== */
-
-.sidebar-divider {
-
-    height: 1px;
-
-    background: rgba(255,255,255,0.08);
-
-    margin: 18px 0 24px 0;
-}
-
-
-.sidebar-kpi-title {
-
-    color: white;
-
-    font-size: 18px;
-
-    font-weight: 700;
-
-    text-align: center;
-
-    margin-bottom: 24px;
-}
-
-
-.sidebar-kpi-grid {
-
-    display: flex;
-
-    justify-content: center;
-
-    gap: 10px;
-
-    margin-bottom: 24px;
-}
-
-
-.sidebar-kpi-card {
-
-    width: 70px;
-
-    height: 52px;
-
-    background: rgba(255,255,255,0.08);
-
-    border-radius: 8px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-}
-
-
-.sidebar-kpi-label {
-
-    color: white;
-
-    font-size: 11px;
-
-    margin-bottom: 4px;
-}
-
-
-.sidebar-kpi-value {
-
-    color: white;
-
-    font-size: 20px;
-
-    font-weight: bold;
-}
-
-
-.success-kpi {
-
-    color: #52ff9f;
-}
-
-
-.failed-kpi {
-
-    color: #ff6262;
-}
-
-
-.sidebar-last-updated {
-
-    text-align: center;
-
-    color: #9eb6d8;
-
-    font-size: 12px;
-
-    margin-top: 10px;
-
-    line-height: 1.8;
-}
-
-
-.sidebar-last-updated span {
-
-    display: block;
-
-    color: white;
-
-    font-weight: 600;
-
-    margin-top: 4px;
-}
-
-
-/* ===================================================== */
-/* CHART */
-/* ===================================================== */
-
-.chart-container {
-
-    height: 420px;
-
-    padding: 20px;
-}
-
-/* ===================================================== */
-/* ANALYTICS TABLE */
-/* ===================================================== */
-
-.analytics-table {
+.chart-wrapper {
+    position: relative;
 
     width: 100%;
 
+    height: calc(100% - 58px);
+
+    padding: 14px 18px 18px 18px;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+#monthlyTrendChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* =========================================================
+   TABLES
+========================================================= */
+
+.placeholder-table {
+    padding: 18px;
+
+    overflow-x: auto;
+}
+
+.analytics-table {
+    width: 100%;
     border-collapse: collapse;
 }
 
 .analytics-table th {
-
     background: #f5f5f5;
 
     padding: 12px;
@@ -392,10 +404,12 @@
     border-bottom: 1px solid #ddd;
 
     font-size: 13px;
+    font-weight: 700;
+
+    white-space: nowrap;
 }
 
 .analytics-table td {
-
     padding: 10px 12px;
 
     border-bottom: 1px solid #eee;
@@ -403,71 +417,737 @@
     font-size: 12px;
 
     vertical-align: top;
+
+    word-break: break-word;
 }
 
 
-/* ===================================================== */
-/* TABLE CONTAINER */
-/* ===================================================== */
+/* =========================================================
+   DAILY SUMMARY TABLE FIX
+========================================================= */
 
-.placeholder-table {
-
-    padding: 18px;
-
-    overflow-x: auto;
-
-    min-height: 250px;
-}
-
-/* ===========================================
-CHART
-=========================================== */
-
-.chart-card {
-
-    min-height: 650px;
-
-    padding: 0;
-
-    overflow: hidden;
-
+#dailySummaryBody td:last-child {
+    min-width: 420px;
 }
 
 
-.chart-wrapper {
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
-    position: relative;
+@media (max-width: 1100px) {
 
+    .chart-wrapper {
+        height: 480px;
+    }
+
+    .sidebar-kpi-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .sidebar-kpi-card {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   PROCESSING STATUS
+========================================================= */
+
+.search-progress-wrapper {
+    margin-top: 10px;
+}
+
+.search-status-heading {
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.search-status-text {
+    color: white;
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.search-progress-bar {
     width: 100%;
+    height: 10px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    overflow: hidden;
+}
 
-    height: 580px;
+.search-progress-fill {
+    width: 0%;
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.35s ease;
+}
 
-    padding: 20px;
+.search-progress-fill.active-progress {
+    animation: progressPulse 1s infinite ease-in-out;
+}
 
+.hidden {
+    display: none;
+}
+
+@keyframes progressPulse {
+
+    0% {
+        opacity: 0.65;
+        transform: scaleY(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scaleY(1.08);
+    }
+
+    100% {
+        opacity: 0.65;
+        transform: scaleY(1);
+    }
 }
 
 
-#monthlyTrendChart {
 
-    width: 100% !important;
+/* =========================================================
+   DOWNLOAD PANEL
+========================================================= */
 
-    height: 100% !important;
+.download-report-btn {
+    width: 100%;
+    height: 46px;
 
+    margin-bottom: 14px;
+
+    background: rgba(255,255,255,0.08);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 12px;
+
+    color: white;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
 }
 
-.kpi-latest-dcn {
+.download-report-btn:hover {
+    background: rgba(255,255,255,0.16);
+}
+
+/* =========================================================
+   FILTER PANEL
+========================================================= */
+
+.filter-panel-wrapper {
+    width: 100%;
+    padding: 4px 0 12px 0;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   FILTER TITLE
+========================================================= */
+
+.filter-main-title {
+    color: #ffffff;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    margin-bottom: 16px;
+}
+
+
+/* =========================================================
+   FILTER CARD
+========================================================= */
+
+.filter-card {
+    background: rgba(255,255,255,0.06);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 12px;
+
+    padding: 14px;
+
+    margin-bottom: 14px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   LABELS
+========================================================= */
+
+.filter-label {
+    display: block;
+
+    color: #dbeafe;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   DROPDOWNS
+========================================================= */
+
+.filter-select {
+    width: 100%;
+    height: 38px;
+
+    background: #445b7c;
+    color: white;
+
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+
+    padding: 0 12px;
 
     font-size: 12px;
 
-    line-height: 18px;
+    outline: none;
 
-    word-break: break-word;
+    box-sizing: border-box;
+}
 
-    white-space: normal;
+.filter-select option {
+    color: black;
+}
 
-    max-width: 100%;
 
-    color: #ff6b6b;
+/* =========================================================
+   DATE INPUTS
+========================================================= */
 
+.filter-date-input {
+    width: 100%;
+    height: 36px;
+
+    background: white;
+    color: black;
+
+    border: none;
+    border-radius: 6px;
+
+    padding: 0 10px;
+
+    font-size: 12px;
+
+    margin-bottom: 10px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   YEAR CHECKBOX SECTION
+========================================================= */
+
+.year-checkbox-grid {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.year-checkbox-grid label {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: white;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.year-checkbox-grid input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+
+    accent-color: #4da3ff;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   QUICK FILTER RADIO
+========================================================= */
+
+.quick-filter-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.quick-filter-group label {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: white;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.quick-filter-group input[type="radio"] {
+    accent-color: #4da3ff;
+
+    width: 14px;
+    height: 14px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   DYNAMIC FILTER SECTION
+========================================================= */
+
+.date-sub-section {
+    display: none;
+
+    margin-top: 14px;
+}
+
+.active-date-section {
+    display: block;
+}
+
+
+/* =========================================================
+   YEAR BUTTONS
+========================================================= */
+
+.year-button-group {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+}
+
+.year-filter-btn {
+    height: 34px;
+
+    background: rgba(255,255,255,0.08);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.year-filter-btn:hover {
+    background: rgba(255,255,255,0.14);
+}
+
+
+/* =========================================================
+   QUICK FILTER BUTTONS
+========================================================= */
+
+.quick-filter-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.quick-filter-btn {
+    width: 100%;
+    height: 36px;
+
+    background: rgba(255,255,255,0.08);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.quick-filter-btn:hover {
+    background: rgba(255,255,255,0.14);
+}
+
+
+/* =========================================================
+   FILTER APPLY BUTTON
+========================================================= */
+
+.filter-apply-btn {
+    width: 100%;
+    height: 40px;
+
+    background: #0078d4;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 13px;
     font-weight: 700;
+
+    cursor: pointer;
+
+    margin-top: 6px;
+}
+
+.filter-apply-btn:hover {
+    background: #1384dc;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .filter-card {
+        padding: 12px;
+    }
+
+    .filter-main-title {
+        font-size: 14px;
+    }
+
+    .filter-label {
+        font-size: 11px;
+    }
+
+    .filter-select,
+    .filter-date-input {
+        font-size: 11px;
+    }
+
+    .quick-filter-group label,
+    .year-checkbox-grid label {
+        font-size: 11px;
+    }
+
+}
+
+/* =========================================================
+   DOCK PANELS
+========================================================= */
+
+.dock-section {
+    display: none;
+    width: 100%;
+}
+
+.dock-section.active-section {
+    display: block;
+}
+
+
+/* =========================================================
+   SIDEBAR CARD
+========================================================= */
+
+.sidebar-card {
+    width: 100%;
+
+    background: transparent;
+
+    border: none;
+
+    border-radius: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   FILTER / DOWNLOAD CLEAN LAYOUT
+========================================================= */
+
+#filter-section,
+#download-section {
+    padding: 8px 16px 16px 16px;
+    box-sizing: border-box;
+}
+
+#filter-section .card-title,
+#download-section .card-title {
+    margin-bottom: 18px;
+}
+
+#download-section .download-report-btn {
+    margin-bottom: 14px;
+}
+
+/* =========================================================
+   FILTER PANEL SELECTS
+========================================================= */
+
+#filter-section select,
+#filter-section input[type="date"] {
+    width: 100%;
+
+    height: 40px;
+
+    margin-bottom: 14px;
+
+    background: #445b7c;
+    color: white;
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    border-radius: 8px;
+
+    padding: 0 12px;
+
+    font-size: 13px;
+
+    box-sizing: border-box;
+
+    outline: none;
+}
+
+#filter-section select option {
+    color: black;
+}
+
+
+/* =========================================================
+   FILTER SUB SECTIONS
+========================================================= */
+
+.date-sub-section {
+    display: none;
+}
+
+.date-sub-section.active-date-section {
+    display: block;
+}
+
+
+/* =========================================================
+   FILTER LABELS
+========================================================= */
+
+#filter-section .filter-label {
+    color: #dbeafe;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   YEAR CHECKBOX
+========================================================= */
+
+.year-checkbox-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.year-checkbox-grid label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: white;
+
+    font-size: 13px;
+}
+
+.year-checkbox-grid input[type="checkbox"] {
+    accent-color: #4da3ff;
+}
+
+
+/* =========================================================
+   DOWNLOAD PANEL
+========================================================= */
+
+#download-section .sidebar-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* =========================================================
+   FILTER / DOWNLOAD PANEL TITLES
+========================================================= */
+
+#filter-section .card-title,
+#download-section .card-title {
+    background: transparent !important;
+
+    border-bottom: none !important;
+
+    padding: 0 0 14px 0 !important;
+
+    color: white !important;
+
+    font-size: 18px !important;
+
+    font-weight: 700 !important;
+
+    line-height: 1.3;
+}
+
+/* =========================================================
+   QUICK RADIO GROUP
+========================================================= */
+
+.quick-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.quick-radio-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.quick-radio-item input[type="radio"] {
+    width: 15px;
+    height: 15px;
+
+    accent-color: #4da3ff;
+
+    cursor: pointer;
+}
+
+/* =========================================================
+   TABLE FIXED SCROLL
+========================================================= */
+
+.daily-summary-card .table-scroll-wrapper {
+    flex: 1;
+
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+
+/* =========================================================
+   PIVOT TABLE SCROLL
+========================================================= */
+
+.analytics-top-grid .table-scroll-wrapper {
+    flex: 1;
+
+    overflow-y: auto;
+}
+
+
+/* =========================================================
+   REMOVE PAGE SCROLL
+========================================================= */
+
+.module-content {
+    overflow: hidden !important;
+}
+
+/* =========================================================
+   FINAL FIX
+========================================================= */
+
+.dashboard-wrapper {
+    overflow: hidden;
+}
+
+.analytics-top-grid .dashboard-card {
+    min-height: 0;
+}
+
+.analytics-top-grid .table-scroll-wrapper {
+    height: calc(100% - 58px);
+}
+
+.daily-summary-card .table-scroll-wrapper {
+    flex: 1;
+
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+/* =========================================================
+   STICKY TABLE HEADERS
+========================================================= */
+
+.analytics-table thead th {
+    position: sticky;
+    top: 0;
+
+    z-index: 10;
+
+    background: #f5f5f5;
+
+    box-shadow: 0 1px 0 #d9d9d9;
+}
+
+
+/* DAILY SUMMARY HEADER */
+.daily-summary-card .analytics-table thead th {
+    top: 0;
+}
+
+
+/* PIVOT HEADER */
+.analytics-top-grid .analytics-table thead th {
+    top: 0;
+}
+
+
+/* FIX HEADER JITTER */
+.table-scroll-wrapper {
+    position: relative;
 }
