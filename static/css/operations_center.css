@@ -1,0 +1,296 @@
+.operations-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 220px);
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+/* ==========================================
+   KPI CARDS
+========================================== */
+
+.summary-card {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #dcdcdc;
+
+    min-height: 60px;
+
+    padding: 8px 12px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.summary-title {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.summary-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f28c38;
+    line-height: 1;
+}
+
+/* ==========================================
+   SECTIONS
+========================================== */
+
+.operations-section {
+    display: none;
+
+    height: calc(100vh - 245px);
+
+    overflow: hidden;
+}
+
+.active-section {
+    display: block;
+}
+
+/* ==========================================
+   MAIN CARD
+========================================== */
+
+.operations-section .card {
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+
+    flex-shrink: 0;
+}
+
+/* ==========================================
+   TABLE WRAPPER
+========================================== */
+
+.table-wrapper {
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    width: 100%;
+}
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.ops-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    table-layout: fixed;
+}
+
+.ops-table thead {
+    background: #f28c38;
+    color: white;
+}
+
+.ops-table thead th {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 5;
+
+    background: #ef8b35;
+}
+
+.ops-table th {
+    padding: 10px;
+    text-align: left;
+    font-size: 13px;
+}
+
+.ops-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ececec;
+    font-size: 13px;
+}
+
+.ops-table tbody tr:hover {
+    background: #f8f8f8;
+}
+
+.ops-table td,
+.ops-table th {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+/* ==========================================
+   SIDEBAR
+========================================== */
+
+.sidebar-section {
+    padding: 12px;
+}
+
+.sidebar-group-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.sidebar-item {
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 6px;
+}
+
+.sidebar-item:hover {
+    background: #f4f4f4;
+}
+
+.sidebar-item.active {
+    background: #f28c38;
+    color: white;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+.primary-btn {
+    background: #f28c38;
+    color: white;
+    border: none;
+    padding: 9px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.primary-btn:hover {
+    opacity: 0.9;
+}
+
+/* ==========================================
+   FILTERS
+========================================== */
+
+.ops-filter {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #d0d0d0;
+    font-size: 13px;
+    min-width: 150px;
+}
+
+/* ==========================================
+   BADGES
+========================================== */
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-action {
+    background: #ffe3e3;
+    color: #d63031;
+}
+
+.badge-awaiting {
+    background: #fff4d6;
+    color: #e67e22;
+}
+
+.badge-completed {
+    background: #e4f7e7;
+    color: #27ae60;
+}
+
+/* ==========================================
+   SUPPORT TABLE WIDTHS
+========================================== */
+
+#supportSection .ops-table th:nth-child(1),
+#supportSection .ops-table td:nth-child(1) {
+    width: 110px;
+}
+
+#supportSection .ops-table th:nth-child(2),
+#supportSection .ops-table td:nth-child(2) {
+    width: 170px;
+}
+
+#supportSection .ops-table th:nth-child(3),
+#supportSection .ops-table td:nth-child(3) {
+    width: auto;
+}
+
+#supportSection .ops-table th:nth-child(4),
+#supportSection .ops-table td:nth-child(4) {
+    width: 130px;
+}
+
+#supportSection .ops-table th:nth-child(5),
+#supportSection .ops-table td:nth-child(5) {
+    width: 140px;
+}
+
+/* ==========================================
+   FAILURE TABLE WIDTHS
+========================================== */
+
+#failureSection .ops-table th:nth-child(1),
+#failureSection .ops-table td:nth-child(1) {
+    width: 140px;
+}
+
+#failureSection .ops-table th:nth-child(2),
+#failureSection .ops-table td:nth-child(2) {
+    width: 120px;
+}
+
+#failureSection .ops-table th:nth-child(3),
+#failureSection .ops-table td:nth-child(3) {
+    width: 260px;
+}
+
+#failureSection .ops-table th:nth-child(4),
+#failureSection .ops-table td:nth-child(4) {
+    width: auto;
+}
+
+#failureSection .ops-table th:nth-child(5),
+#failureSection .ops-table td:nth-child(5) {
+    width: 180px;
+}

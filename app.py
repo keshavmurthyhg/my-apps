@@ -19,6 +19,9 @@ from routes.test_routes import common_layout_bp
 from routes.excel_merge_routes import excel_merge_bp
 from routes.dcn_sequence_routes import dcn_sequence_bp
 from routes.dcn_analytics_routes import dcn_analytics_bp
+from modules.operations_center.ops_center_tracker_api import (
+    operations_center_bp
+)
 
 # -----------------------------
 # APP INIT
@@ -59,6 +62,9 @@ app.register_blueprint(common_layout_bp)
 app.register_blueprint(excel_merge_bp)
 app.register_blueprint(dcn_sequence_bp)
 app.register_blueprint(dcn_analytics_bp)
+app.register_blueprint(
+    operations_center_bp
+)
 
 # -----------------------------
 # HOME PAGE

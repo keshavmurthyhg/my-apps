@@ -1,0 +1,345 @@
+{% extends "main.html" %}
+
+{% block page_title %}
+Operations Center
+{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static',
+      filename='css/operations_center.css') }}">
+{% endblock %}
+
+{% block top_center %}
+<div class="module-title-pill">
+    Operations Center
+</div>
+{% endblock %}
+
+{% block toolbar_left %}
+
+<button class="primary-btn"
+        onclick="refreshOperationsData()">
+    Refresh Data
+</button>
+
+<button class="primary-btn"
+        onclick="refreshPowerQuery()">
+    Refresh Power Query
+</button>
+
+<select id="categoryFilter"
+        class="ops-filter"
+        onchange="applyFilters()">
+
+    <option value="">
+        All Categories
+    </option>
+
+    <option value="Action Required">
+        Action Required
+    </option>
+
+    <option value="Awaiting Vendor">
+        Awaiting Vendor
+    </option>
+
+    <option value="Awaiting AOM">
+        Awaiting AOM
+    </option>
+
+</select>
+
+<select id="priorityFilter"
+        class="ops-filter"
+        onchange="applyFilters()">
+
+    <option value="">
+        All Importance
+    </option>
+
+    <option value="High">
+        High
+    </option>
+
+    <option value="Normal">
+        Normal
+    </option>
+
+</select>
+
+{% endblock %}
+
+{% block sidebar %}
+
+<div class="sidebar-section">
+
+    <div class="sidebar-group-title">
+        Monitoring
+    </div>
+
+    <div class="sidebar-item active"
+         id="supportTab"
+         onclick="showSection('support')">
+
+        Support Emails
+
+    </div>
+
+    <div class="sidebar-item"
+         id="failureTab"
+         onclick="showSection('failure')">
+
+        Integration Failures
+
+    </div>
+
+    <div class="sidebar-item"
+        id="incidentTab"
+        onclick="showSection('incident')">
+
+        Incident Tracker
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="operations-summary-grid" id="summaryGrid">
+
+    <!-- SUPPORT KPIs -->
+
+    <div class="summary-card support-kpi">
+
+        <div class="summary-title">
+            Support Emails
+        </div>
+
+        <div class="summary-value"
+             id="supportCountCard">
+            {{ support_data|length }}
+        </div>
+
+    </div>
+
+    <div class="summary-card support-kpi">
+
+        <div class="summary-title">
+            Pending Actions
+        </div>
+
+        <div class="summary-value"
+             id="pendingActionCard">
+
+            {{
+                support_data
+                | selectattr("Categories", "equalto", "Action Required")
+                | list
+                | length
+            }}
+
+        </div>
+
+    </div>
+
+    <!-- FAILURE KPIs -->
+
+    <div class="summary-card failure-kpi"
+         style="display:none;">
+
+        <div class="summary-title">
+            Integration Failures
+        </div>
+
+        <div class="summary-value">
+            {{ failure_data|length }}
+        </div>
+
+    </div>
+
+    <div class="summary-card failure-kpi"
+         style="display:none;">
+
+        <div class="summary-title">
+            Critical Servers
+        </div>
+
+        <div class="summary-value">
+            {{ summary.critical_servers }}
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SUPPORT EMAILS -->
+
+<div id="supportSection"
+     class="operations-section active-section">
+
+    <div class="card">
+
+        <div class="section-title">
+            Support Emails
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="ops-table">
+
+                <thead>
+                    <tr>
+                        <th>Date Received</th>
+                        <th>Name</th>
+                        <th>Subject</th>
+                        <!--<th>Address</th> -->
+                        <!--<th>Status</th> -->
+                        <th>Importance</th>
+                        <th>Category</th>
+                        
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for row in support_data %}
+
+                    <tr>
+
+                        <td>{{ row.DateTimeReceived }}</td>
+                        <td>{{ row.Name }}</td>
+                        <td>{{ row.Subject }}</td>
+                        <!--<td>{{ row.Address }}</td> -->
+                        <td>{{ row.Importance }}</td>
+                        <td>{{ row.Categories }}</td>
+                        <!--<td>{{ row.Status }}</td> -->
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- INTEGRATION FAILURES -->
+
+<div id="failureSection"
+     class="operations-section">
+
+    <div class="card">
+
+        <div class="section-title">
+            PROD Integration Failures
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="ops-table">
+
+                <thead>
+                    <tr>
+                        <th>Failure Time</th>
+                        <th>Subject</th>
+                        <th>Object Number</th>
+                        <th>Error Message</th>
+                        <th>Windchill Server</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for row in failure_data %}
+
+                    <tr>
+
+                        <td>{{ row['Failure Time'] }}</td>
+                        <td>{{ row.Subject }}</td>
+                        <td>{{ row['Object Number'] }}</td>
+                        <td>{{ row['Error Message'] }}</td>
+                        <td>{{ row['Windchill Server'] }}</td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- INCIDENT TRACKER -->
+
+<div id="incidentSection"
+     class="operations-section">
+
+    <div class="card">
+
+        <div class="section-title">
+            Incident Tracker
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="ops-table">
+
+                <thead>
+                <tr>
+                    <th>Incident Number</th>
+                    <th>Short Description</th>
+                    <th>Assignment Group</th>
+                    <th>Priority</th>
+                    <th>State</th>
+                    <th>Opened</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                {% for row in incident_data %}
+
+                    <tr>
+
+                        <td>{{ row['Incident ID'] }}</td>
+                        <td>{{ row.Title }}</td>
+                        <td>{{ row.Status }}</td>
+                        <td>{{ row.Priority }}</td>
+                        <td>{{ row['Created Date'] }}</td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block page_js %}
+<script src="{{ url_for('static',
+filename='js/operations_center.js') }}"></script>
+{% endblock %}
