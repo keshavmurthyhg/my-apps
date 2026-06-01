@@ -2,8 +2,13 @@ import os
 import tempfile
 import win32com.client
 import pythoncom
+subprocess.run([
+    "libreoffice",
 
+libreoffice_path = r"C:\Program Files\LibreOffice\program\soffice.exe"
 
+subprocess.run([
+    libreoffice_path,
 # -----------------------------------
 # Extract all visible text from slide
 # -----------------------------------

@@ -1,13 +1,23 @@
 from modules.operations_center.ops_center_data_loader import (
     load_support_mails,
     load_integration_failures,
-    load_incident_tracker
 )
 
 from modules.operations_center.ops_center_incident_engine import (
     detect_critical_failures
 )
 
+from modules.operations_center.ops_center_incident_loader import (
+    load_incident_tracker
+)
+
+from modules.operations_center.ops_center_azure_loader import (
+    load_azure_tracker
+)
+
+from modules.operations_center.ops_center_ptc_loader import (
+    load_ptc_tracker
+)
 
 def get_operations_dashboard_data():
 
@@ -19,7 +29,9 @@ def get_operations_dashboard_data():
 
     failure_data = load_integration_failures()
 
-    incident_data = load_incident_tracker()
+    incident_data = (
+        load_incident_tracker()
+    )
 
     # ---------------------------------
     # PENDING ACTIONS
@@ -50,6 +62,14 @@ def get_operations_dashboard_data():
     )
 
     # ---------------------------------
+    # ADDITIONAL TRACKERS
+    # ---------------------------------
+
+    azure_data = load_azure_tracker()
+
+    ptc_data = load_ptc_tracker()
+
+    # ---------------------------------
     # SUMMARY
     # ---------------------------------
 
@@ -63,12 +83,24 @@ def get_operations_dashboard_data():
             failure_data
         ),
 
-        "pending_actions": pending_actions,
+        "pending_actions":
+            pending_actions,
 
         "critical_servers": len(
             critical_servers
-        )
+        ),
 
+        "active_incidents": len(
+            incident_data
+        ),
+
+        "azure_count": len(
+            azure_data
+        ),
+
+        "ptc_count": len(
+            ptc_data
+        )
     }
 
     # ---------------------------------
@@ -83,6 +115,10 @@ def get_operations_dashboard_data():
 
         "incident_data": incident_data,
 
+        "azure_data": azure_data,
+        
+        "ptc_data": ptc_data,
+        
         "summary": summary
 
     }

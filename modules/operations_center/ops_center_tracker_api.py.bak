@@ -1,0 +1,92 @@
+from flask import (
+    Blueprint,
+    render_template,
+    jsonify
+)
+
+from modules.operations_center.ops_center_service import (
+    get_operations_dashboard_data
+)
+
+from modules.operations_center.ops_center_excel_refresh import (
+    refresh_power_query
+)
+
+operations_center_bp = Blueprint(
+    "operations_center",
+    __name__
+)
+
+
+@operations_center_bp.route(
+    "/operations-center"
+)
+def operations_center():
+
+    dashboard_data = (
+        get_operations_dashboard_data()
+    )
+
+    return render_template(
+        "operations_center.html",
+
+        support_data=
+            dashboard_data["support_data"],
+
+        failure_data=
+            dashboard_data["failure_data"],
+
+        incident_data=
+            dashboard_data["incident_data"],
+
+        azure_data=
+            dashboard_data["azure_data"],
+
+        ptc_data=
+            dashboard_data["ptc_data"],
+
+        summary=
+            dashboard_data["summary"]
+    )
+
+
+@operations_center_bp.route(
+    "/api/operations-center/refresh"
+)
+def refresh_operations_data():
+
+    dashboard_data = (
+        get_operations_dashboard_data()
+    )
+
+    return jsonify({
+
+        "success": True,
+
+        "support_data":
+            dashboard_data["support_data"],
+
+        "failure_data":
+            dashboard_data["failure_data"],
+
+        "incident_data":
+            dashboard_data["incident_data"],
+
+        "azure_data":
+            dashboard_data["azure_data"],
+
+        "ptc_data":
+            dashboard_data["ptc_data"],
+
+        "summary":
+            dashboard_data["summary"]
+    })
+
+@operations_center_bp.route(
+    "/api/operations-center/refresh-power-query"
+)
+def refresh_power_query_route():
+
+    result = refresh_power_query()
+
+    return jsonify(result)

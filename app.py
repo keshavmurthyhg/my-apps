@@ -1,11 +1,12 @@
 from flask import (
     Flask,
     render_template,
-    send_from_directory
+    send_from_directory,
+    jsonify
 )
 
 import os
-
+from pathlib import Path
 
 # -----------------------------
 # BLUEPRINT IMPORTS
@@ -19,9 +20,7 @@ from routes.test_routes import common_layout_bp
 from routes.excel_merge_routes import excel_merge_bp
 from routes.dcn_sequence_routes import dcn_sequence_bp
 from routes.dcn_analytics_routes import dcn_analytics_bp
-from modules.operations_center.ops_center_tracker_api import (
-    operations_center_bp
-)
+from routes.operations_center_routes import (operations_center_bp)
 
 # -----------------------------
 # APP INIT
@@ -95,7 +94,6 @@ def uploaded_file(filename):
         filename
     )
 
-
 # -----------------------------
 # RUN APP
 # -----------------------------
@@ -104,3 +102,5 @@ if __name__ == "__main__":
         debug=True,
         use_reloader=False
     )
+
+

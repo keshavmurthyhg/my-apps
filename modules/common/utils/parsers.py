@@ -221,3 +221,38 @@ def parse_mixed_date(val):
 
     except:
         return pd.NaT
+
+
+# =========================================
+# REMOVE EMAIL ADDRESS
+# =========================================
+
+def clean_person_name(val):
+
+    if pd.isna(val):
+        return ""
+
+    val = str(val).strip()
+
+    if "<" in val:
+        val = val.split("<")[0]
+
+    if "(" in val:
+        val = val.split("(")[0]
+
+    return val.strip()
+
+
+# =========================================
+# FORMAT TRACKER DATE
+# =========================================
+
+def format_tracker_date(val):
+
+    dt = parse_mixed_date(val)
+
+    if pd.isna(dt):
+        return ""
+
+    return dt.strftime("%d-%b-%Y")
+
