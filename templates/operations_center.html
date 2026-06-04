@@ -93,22 +93,12 @@ Operations Center
 
 {% block sidebar %}
 
-<button class="sidebar-btn"
-        onclick="refreshPowerQuery()">
-    Refresh Power Query
-</button>
+<!-- <button class="sidebar-btn"
+        disabled>
 
-<div id="lastRefreshTime"
-     style="
-        color:white;
-        font-size:12px;
-        margin-top:8px;
-        margin-bottom:16px;
-        text-align:center;
-        line-height:1.4;
-     ">
-    Last Refresh: Loading...
-</div>
+    Outlook Auto Collection Active
+
+</button> -->
 
 <div class="sidebar-content">
 
@@ -140,12 +130,41 @@ Operations Center
                 Downloads
             </div>
 
-            <button class="sidebar-btn">
-                Export Current View
+            <button
+                class="sidebar-btn export-btn"
+                onclick="exportCurrentViewCSV()">
+
+                Export CSV
+
+            </button>
+
+            <button
+                class="sidebar-btn export-btn"
+                onclick="exportCurrentViewXLSX()">
+
+                Export Excel
+
             </button>
 
         </div>
 
+    </div>
+
+</div>
+
+<div class="collection-status">
+
+    <div class="collection-title">
+        Outlook Auto Collection
+    </div>
+
+    <div class="collection-value">
+        Active
+    </div>
+
+    <div id="lastRefreshTime"
+         class="collection-refresh">
+        Last Refresh: Loading...
     </div>
 
 </div>
@@ -166,33 +185,13 @@ Operations Center
     <div class="summary-card">
 
         <div class="summary-title">
-            Support Emails
-        </div>
-
-        <div class="summary-value"
-             id="supportCountCard">
-
-            {{ support_data|length }}
-
-        </div>
-
-    </div>
-
-    <div class="summary-card">
-
-        <div class="summary-title">
             Pending Actions
         </div>
 
         <div class="summary-value"
              id="pendingActionCard">
 
-            {{
-                support_data
-                | selectattr("Categories", "equalto", "Action Required")
-                | list
-                | length
-            }}
+            <span id="pendingActionCard">0</span>
 
         </div>
 
@@ -454,24 +453,7 @@ Operations Center
                     </tr>
                 </thead>
 
-                <tbody>
-
-                {% for row in support_data %}
-
-                    <tr>
-
-                        <td>{{ row.DateTimeReceived }}</td>
-                        <td>{{ row.Name }}</td>
-                        <td>{{ row.Subject }}</td>
-                        <!--<td>{{ row.Address }}</td> -->
-                        <td>{{ row.Importance }}</td>
-                        <td>{{ row.Categories }}</td>
-                        <!--<td>{{ row.Status }}</td> -->
-
-                    </tr>
-
-                {% endfor %}
-
+                <tbody id="supportTableBody">
                 </tbody>
 
             </table>
@@ -491,7 +473,7 @@ Operations Center
     <div class="card">
 
         <div class="section-title">
-            PROD Integration Failures
+            Integration Failures
         </div>
 
         <div class="table-wrapper">
@@ -499,31 +481,19 @@ Operations Center
             <table class="ops-table">
 
                 <thead>
+
                     <tr>
                         <th>Failure Time</th>
-                        <th>Subject</th>
+                        <th>Integration</th>
                         <th>Object Number</th>
-                        <th>Error Message</th>
-                        <th>Windchill Server</th>
+                        <th>Error Message</th>                        
+                        <th>Environment</th>
+                        <th>WC Server</th>
                     </tr>
+
                 </thead>
 
-                <tbody>
-
-                {% for row in failure_data %}
-
-                    <tr>
-
-                        <td>{{ row['Failure Time'] }}</td>
-                        <td>{{ row.Subject }}</td>
-                        <td>{{ row['Object Number'] }}</td>
-                        <td>{{ row['Error Message'] }}</td>
-                        <td>{{ row['Windchill Server'] }}</td>
-
-                    </tr>
-
-                {% endfor %}
-
+                <tbody id="failureTableBody">
                 </tbody>
 
             </table>
@@ -569,9 +539,45 @@ Operations Center
 
                     <tr>
 
-                        <td>{{ row.Number }}</td>
+                        <td>
 
-                        <td>{{ row['Vendor Ticket'] }}</td>
+                            {% if row.number_url %}
+
+                                <a href="{{ row.number_url }}"
+                                target="_blank"
+                                class="number-link">
+
+                                    {{ row.Number }}
+
+                                </a>
+
+                            {% else %}
+
+                                {{ row.Number }}
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if row.vendor_ticket_url %}
+
+                                <a href="{{ row.vendor_ticket_url }}"
+                                target="_blank"
+                                class="number-link">
+
+                                    {{ row['Vendor Ticket'] }}
+
+                                </a>
+
+                            {% else %}
+
+                                {{ row['Vendor Ticket'] }}
+
+                            {% endif %}
+
+                        </td>
 
                         <td>
                             <div class="desc-cell"
@@ -635,7 +641,25 @@ Operations Center
 
                 <tr>
 
-                    <td>{{ row.Number }}</td>
+                    <td>
+
+                        {% if row.number_url %}
+
+                            <a href="{{ row.number_url }}"
+                            target="_blank"
+                            class="number-link">
+
+                                {{ row.Number }}
+
+                            </a>
+
+                        {% else %}
+
+                            {{ row.Number }}
+
+                        {% endif %}
+
+                    </td>
 
                     <td>
                         <div class="desc-cell"
@@ -701,7 +725,17 @@ Operations Center
 
                 <tr>
 
-                    <td>{{ row.Number }}</td>
+                    <td>
+                        {% if row.number_url %}
+                            <a href="{{ row.number_url }}"
+                               target="_blank"
+                               class="number-link">
+                                {{ row.Number }}
+                            </a>
+                        {% else %}
+                            {{ row.Number }}
+                        {% endif %}
+                    </td>
 
                     <td>
                         <div class="desc-cell"
@@ -733,6 +767,22 @@ Operations Center
     </div>
 
 </div>
+
+{% block module_status %}
+
+<div id="progressText"
+     class="search-status-text">
+</div>
+
+<div class="search-progress-bar">
+
+    <div id="progressFill"
+         class="search-progress-fill">
+    </div>
+
+</div>
+
+{% endblock %}
 
 {% endblock %}
 

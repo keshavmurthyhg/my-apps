@@ -1,7 +1,16 @@
+import pandas as pd
+import os
+
+
+from io import BytesIO
+from datetime import datetime
+from pathlib import Path
 from flask import (
     Blueprint,
     render_template,
-    jsonify
+    jsonify,
+    send_file,
+    request
 )
 
 from modules.operations_center.ops_center_excel_refresh import (
@@ -12,9 +21,9 @@ from modules.operations_center.ops_center_service import (
     get_operations_dashboard_data
 )
 
-import pandas as pd
-import os
-from pathlib import Path
+from modules.common.utils.links import (
+    get_url
+)
 
 operations_center_bp = Blueprint(
     "operations_center",
@@ -26,7 +35,6 @@ DATA_FILE = os.path.join(
     "operations_tracker.xlsx"
 )
 
-
 from modules.operations_center.ops_support_email_collector import (
     get_support_emails
 )
@@ -35,12 +43,111 @@ from modules.operations_center.ops_integration_failure_collector import (
     get_integration_failures
 )
 
+@operations_center_bp.route(
+    "/api/operations-center/export",
+    methods=["POST"]
+)
+def export_operations_view():
+
+    try:
+
+        payload = request.get_json()
+
+        rows = payload.get("rows", [])
+
+        tracker = payload.get(
+            "tracker",
+            "operations"
+        )
+
+        df = pd.DataFrame(rows)
+
+        output = BytesIO()
+
+        with pd.ExcelWriter(
+            output,
+            engine="openpyxl"
+        ) as writer:
+
+            df.to_excel(
+                writer,
+                index=False,
+                sheet_name=tracker[:31]
+            )
+
+        output.seek(0)
+
+        timestamp = datetime.now().strftime(
+            "%d%b%Y_%H%M"
+        )
+
+        return send_file(
+            output,
+            as_attachment=True,
+            download_name=
+                f"{tracker}_{timestamp}.xlsx",
+            mimetype=
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+    except Exception as e:
+
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
 @operations_center_bp.route("/operations-center")
 def operations_center():
 
     dashboard_data = (
         get_operations_dashboard_data()
     )
+
+    # -----------------------------------
+    # INCIDENT LINKS
+    # -----------------------------------
+    for row in dashboard_data["incident_data"]:
+
+        row["number_url"] = get_url(
+            "incident",
+            row.get("Number")
+        )
+
+        vendor_ticket = str(
+            row.get("Vendor Ticket", "")
+        ).strip()
+
+        if vendor_ticket.isdigit():
+
+            row["vendor_ticket_url"] = get_url(
+                "ptc case",
+                vendor_ticket
+            )
+
+        else:
+            row["vendor_ticket_url"] = ""
+
+    # -----------------------------------
+    # AZURE LINKS
+    # -----------------------------------
+    for row in dashboard_data["azure_data"]:
+
+        row["number_url"] = get_url(
+            "azure bug",
+            row.get("Number")
+        )
+
+    # -----------------------------------
+    # PTC LINKS
+    # -----------------------------------
+    for row in dashboard_data["ptc_data"]:
+
+        row["number_url"] = get_url(
+            "ptc case",
+            row.get("Number")
+        ) 
+
 
     return render_template(
         "operations_center.html",
@@ -73,9 +180,26 @@ def refresh_operations_data():
         get_operations_dashboard_data()
     )
 
+    status_file = Path(
+        "data/refresh_status.txt"
+    )
+
+    refresh_time = "Never"
+
+    if status_file.exists():
+
+        refresh_time = (
+            status_file.read_text(
+                encoding="utf-8"
+            ).strip()
+        )
+
     return jsonify({
 
         "success": True,
+
+        "refresh_time":
+            refresh_time,
 
         "support_data":
             dashboard_data["support_data"],

@@ -201,15 +201,31 @@ body:has(#ptcSection) {
    SIDEBAR
 ========================================== */
 
-.sidebar-section {
-    padding: 12px;
+.sidebar-section{
+
+    padding:0;
+
+    margin-left:-12px;
+
+    margin-top: 0 !important;
+
+    padding-top: 0 !important;
 }
 
 .sidebar-group-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: #888;
-    margin-bottom: 12px;
+    margin-top:0;
+
+    margin-left:0;
+
+    padding-left:0;
+
+    color:#ffffff;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    margin-bottom:20px;
 }
 
 .sidebar-item {
@@ -226,6 +242,11 @@ body:has(#ptcSection) {
 .sidebar-item.active {
     background: #f28c38;
     color: white;
+}
+
+#dynamicFilters{
+
+    margin-top:0px;
 }
 
 /* ==========================================
@@ -248,7 +269,7 @@ body:has(#ptcSection) {
 
 .sidebar-btn{
     width:100%;
-    height:24px;
+    height:18px;
 
     background:#ffffff;
     color:#183153;
@@ -256,7 +277,7 @@ body:has(#ptcSection) {
     border:1px solid #d7dde7;
     border-radius:6px;
 
-    font-size:13px;
+    font-size:12px;
     font-weight:600;
 
     cursor:pointer;
@@ -264,6 +285,84 @@ body:has(#ptcSection) {
 
 .sidebar-btn:hover{
     background:#f5f7fa;
+}
+
+.collection-status {
+
+    margin-top: auto;
+
+    padding: 12px;
+
+    background: rgba(255,255,255,0.06);
+
+    border-radius: 10px;
+
+    color: white;
+
+    text-align: center;
+
+    flex-shrink: 0;
+}
+
+.sidebar-content {
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-start !important;
+
+    align-items: stretch;
+
+    gap: 0;
+
+    padding-top: 10px;
+
+    padding-bottom: 120px !important;
+}
+
+.collection-title {
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #ffffff;
+}
+
+.collection-value {
+
+    margin-top: 4px;
+
+    color: #4ade80;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+.collection-refresh {
+
+    margin-top: 8px;
+
+    font-size: 12px;
+
+    color: #cfd8e3;
+
+    line-height: 1.5;
+}
+
+.export-btn{
+
+    width:100%;
+    height:38px;
+
+    margin-bottom:10px;
+
+    font-size:14px;
+    font-weight:600;
+
+    border-radius:8px;
 }
 
 /* ==========================================
@@ -292,6 +391,54 @@ body:has(#ptcSection) {
 
 .dock-section.active-dock-section{
     display:block;
+}
+
+.sidebar-date {
+
+    width:100%;
+
+    height:36px;
+
+    background:white;
+
+    color:black;
+
+    border:none;
+
+    border-radius:6px;
+
+    padding:0 10px;
+
+    font-size:12px;
+
+    margin-bottom:10px;
+
+    box-sizing:border-box;
+}
+
+.date-sub-section {
+
+    display:none;
+
+    margin-top:10px;
+}
+
+.active-date-section {
+
+    display:block;
+}
+
+.filter-label {
+
+    display:block;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    color:#dbeafe;
+
+    margin-bottom:6px;
 }
 
 /* ==========================================
@@ -360,19 +507,47 @@ body:has(#ptcSection) {
     margin-bottom:16px;
 }
 
-.filter-label{
+.filter-label {
+
+    display:block;
+
+    color:#dbeafe;
+
     font-size:12px;
+
     font-weight:600;
-    margin-bottom:6px;
-    color:#d0d6e0;
+
+    margin-bottom:8px;
 }
 
-.sidebar-filter{
+.sidebar-filter {
+
     width:100%;
-    padding:8px;
+
+    min-width:165px;
+
+    height:38px;
+
+    background:#445b7c;
+
+    color:white;
+
+    border:1px solid rgba(255,255,255,0.12);
+
     border-radius:8px;
-    border:none;
-    margin-bottom:10px;
+
+    padding:0 12px;
+
+    font-size:12px;
+
+    margin-bottom:14px;
+
+    box-sizing:border-box;
+}
+
+.sidebar-filter option {
+
+    color:black;
 }
 
 /* ==========================================
@@ -391,6 +566,54 @@ body:has(#ptcSection) {
     max-height:34px;
 
     cursor:help;
+}
+
+/* ==========================================
+   PROCESSING STATUS AND PROGRESS BAR
+========================================== */
+
+.search-status-heading{
+
+    font-size:15px;
+    font-weight:700;
+
+    color:white;
+}
+
+.search-status-text{
+
+    font-size:12px;
+
+    color:#dbeafe;
+
+    margin-top:4px;
+
+    min-height:18px;
+}
+
+.search-progress-bar{
+    width:100%;
+    height:14px;
+    background:#3c547e;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:10px;
+}
+
+.search-progress-fill{
+    width:0;
+    height:100%;
+    transition:all .4s ease;
+}
+
+.active-progress{
+    animation:pulseBar 1.5s infinite;
+}
+
+@keyframes pulseBar{
+    0%{opacity:.7;}
+    50%{opacity:1;}
+    100%{opacity:.7;}
 }
 
 /* ==========================================
@@ -428,17 +651,17 @@ body:has(#ptcSection) {
 
 #failureSection .ops-table th:nth-child(1),
 #failureSection .ops-table td:nth-child(1) {
-    width: 140px;
+    width: 110px;
 }
 
 #failureSection .ops-table th:nth-child(2),
 #failureSection .ops-table td:nth-child(2) {
-    width: 120px;
+    width: 90px;
 }
 
 #failureSection .ops-table th:nth-child(3),
 #failureSection .ops-table td:nth-child(3) {
-    width: 260px;
+    width: 160px;
 }
 
 #failureSection .ops-table th:nth-child(4),
@@ -448,7 +671,12 @@ body:has(#ptcSection) {
 
 #failureSection .ops-table th:nth-child(5),
 #failureSection .ops-table td:nth-child(5) {
-    width: 180px;
+    width: 100px;
+}
+
+#failureSection .ops-table th:nth-child(6),
+#failureSection .ops-table td:nth-child(6) {
+    width: 100px;
 }
 
 /* ==========================================
@@ -568,4 +796,27 @@ body:has(#ptcSection) {
 #ptcSection .ops-table th:nth-child(7),
 #ptcSection .ops-table td:nth-child(7) {
     width: 130px;
+}
+
+/* Hide main layout progress bar only for Operations Center */
+
+.operations-section ~ .search-progress-bar,
+#content .search-progress-bar:not(.sidebar .search-progress-bar) {
+    display: none !important;
+}
+
+/* ==========================================
+   NUMBER LINK STYLE
+========================================== */
+
+.ops-table .number-link,
+.ops-table .number-link:visited,
+.ops-table .number-link:hover,
+.ops-table .number-link:active {
+
+    color: #111827 !important;
+
+    font-weight: 400 !important;
+
+    text-decoration: none !important;
 }
