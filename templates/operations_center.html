@@ -59,6 +59,12 @@ Operations Center
     Refresh Data
 </button>
 
+<button class="primary-btn tracker-btn"
+        id="dashboardToolbarBtn"
+        onclick="showSection('dashboard')">
+    📊 Dashboard
+</button>
+
 <button class="primary-btn tracker-btn active"
         id="supportToolbarBtn"
         onclick="showSection('support')">
@@ -418,6 +424,180 @@ Operations Center
                 | length
             }}
 
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- DASHBOARD OVERVIEW SECTION                            -->
+<!-- ===================================================== -->
+
+<div id="dashboardSection"
+     class="operations-section">
+
+    <!-- ── TOP ROW: 4 KPI TILES ── -->
+    <div class="dashboard-kpi-row">
+
+        <div class="dashboard-kpi-tile tile-support"
+             onclick="showSection('support')">
+            <div class="tile-icon">📧</div>
+            <div class="tile-value" id="dash-support-count">{{ support_data|length }}</div>
+            <div class="tile-label">Support Emails</div>
+            <div class="tile-sub" id="dash-pending-actions">
+                {{ summary.pending_actions }} pending action{{ 's' if summary.pending_actions != 1 else '' }}
+            </div>
+        </div>
+
+        <div class="dashboard-kpi-tile tile-failure"
+             onclick="showSection('failure')">
+            <div class="tile-icon">⚠️</div>
+            <div class="tile-value" id="dash-failure-count">{{ failure_data|length }}</div>
+            <div class="tile-label">PROD Failures</div>
+            <div class="tile-sub" id="dash-critical-servers">
+                {{ summary.critical_servers }} critical server{{ 's' if summary.critical_servers != 1 else '' }}
+            </div>
+        </div>
+
+        <div class="dashboard-kpi-tile tile-snow"
+             onclick="showSection('incident')">
+            <div class="tile-icon">🎫</div>
+            <div class="tile-value" id="dash-incident-count">{{ incident_data|length }}</div>
+            <div class="tile-label">SNOW Incidents</div>
+            <div class="tile-sub">
+                Open / In Progress / On Hold
+            </div>
+        </div>
+
+        <div class="dashboard-kpi-tile tile-azure"
+             onclick="showSection('azure')">
+            <div class="tile-icon">☁</div>
+            <div class="tile-value" id="dash-azure-count">{{ azure_data|length }}</div>
+            <div class="tile-label">Azure Bugs</div>
+            <div class="tile-sub">Active bugs</div>
+        </div>
+
+        <div class="dashboard-kpi-tile tile-ptc"
+             onclick="showSection('ptc')">
+            <div class="tile-icon">🛠</div>
+            <div class="tile-value" id="dash-ptc-count">{{ ptc_data|length }}</div>
+            <div class="tile-label">PTC Cases</div>
+            <div class="tile-sub">Open cases</div>
+        </div>
+
+    </div>
+
+    <!-- ── BOTTOM ROW: 3 MINI TABLES ── -->
+    <div class="dashboard-tables-row">
+
+        <!-- SNOW Incidents mini table -->
+        <div class="dashboard-mini-card">
+            <div class="mini-card-header">
+                <span class="mini-card-title">🎫 Recent SNOW Incidents</span>
+                <a class="mini-card-link" onclick="showSection('incident')">View all →</a>
+            </div>
+            <table class="mini-table">
+                <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Assigned To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in incident_data[:6] %}
+                    <tr>
+                        <td>
+                            {% if row.number_url %}
+                                <a href="{{ row.number_url }}" target="_blank" class="number-link">{{ row.Number }}</a>
+                            {% else %}
+                                {{ row.Number }}
+                            {% endif %}
+                        </td>
+                        <td class="mini-desc">{{ row.Description }}</td>
+                        <td><span class="status-pill status-{{ row.Status|lower|replace(' ','-') }}">{{ row.Status }}</span></td>
+                        <td>{{ row['Assigned To'] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="mini-empty">No active incidents</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Azure Bugs mini table -->
+        <div class="dashboard-mini-card">
+            <div class="mini-card-header">
+                <span class="mini-card-title">☁ Recent Azure Bugs</span>
+                <a class="mini-card-link" onclick="showSection('azure')">View all →</a>
+            </div>
+            <table class="mini-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Created By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in azure_data[:6] %}
+                    <tr>
+                        <td>
+                            {% if row.number_url %}
+                                <a href="{{ row.number_url }}" target="_blank" class="number-link">{{ row.Number }}</a>
+                            {% else %}
+                                {{ row.Number }}
+                            {% endif %}
+                        </td>
+                        <td class="mini-desc">{{ row.Description }}</td>
+                        <td><span class="status-pill status-{{ row.Status|lower|replace(' ','-') }}">{{ row.Status }}</span></td>
+                        <td>{{ row['Created By'] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="mini-empty">No active bugs</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PTC Cases mini table -->
+        <div class="dashboard-mini-card">
+            <div class="mini-card-header">
+                <span class="mini-card-title">🛠 Recent PTC Cases</span>
+                <a class="mini-card-link" onclick="showSection('ptc')">View all →</a>
+            </div>
+            <table class="mini-table">
+                <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Created By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in ptc_data[:6] %}
+                    <tr>
+                        <td>
+                            {% if row.number_url %}
+                                <a href="{{ row.number_url }}" target="_blank" class="number-link">{{ row.Number }}</a>
+                            {% else %}
+                                {{ row.Number }}
+                            {% endif %}
+                        </td>
+                        <td class="mini-desc">{{ row.Description }}</td>
+                        <td><span class="status-pill status-{{ row.Status|lower|replace(' ','-') }}">{{ row.Status }}</span></td>
+                        <td>{{ row['Created By'] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="mini-empty">No active cases</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
     </div>
