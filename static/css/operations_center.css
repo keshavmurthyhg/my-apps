@@ -820,3 +820,211 @@ body:has(#ptcSection) {
 
     text-decoration: none !important;
 }
+
+/* =====================================================
+   DASHBOARD OVERVIEW SECTION
+===================================================== */
+
+/* KPI tiles row */
+.dashboard-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+}
+
+.dashboard-kpi-tile {
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+}
+
+.dashboard-kpi-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.tile-icon {
+    font-size: 22px;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.tile-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.tile-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.tile-sub {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+/* Tile accent colours — left border only */
+.tile-support  { border-left: 4px solid #3b82f6; }
+.tile-failure  { border-left: 4px solid #ef4444; }
+.tile-snow     { border-left: 4px solid #f28c38; }
+.tile-azure    { border-left: 4px solid #0ea5e9; }
+.tile-ptc      { border-left: 4px solid #8b5cf6; }
+
+.tile-support  .tile-value { color: #3b82f6; }
+.tile-failure  .tile-value { color: #ef4444; }
+.tile-snow     .tile-value { color: #f28c38; }
+.tile-azure    .tile-value { color: #0ea5e9; }
+.tile-ptc      .tile-value { color: #8b5cf6; }
+
+/* Mini tables row */
+.dashboard-tables-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.dashboard-mini-card {
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.mini-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+
+.mini-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.mini-card-link {
+    font-size: 11px;
+    color: #f28c38;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.mini-card-link:hover {
+    text-decoration: underline;
+}
+
+/* Mini table styles */
+.mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 11px;
+    flex: 1;
+}
+
+.mini-table thead {
+    background: #f9fafb;
+}
+
+.mini-table th {
+    padding: 6px 8px;
+    text-align: left;
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 10px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.mini-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.mini-desc {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mini-empty {
+    text-align: center;
+    color: #9ca3af;
+    padding: 20px !important;
+}
+
+/* Column widths for mini tables */
+.dashboard-mini-card .mini-table th:nth-child(1),
+.dashboard-mini-card .mini-table td:nth-child(1) { width: 90px; }
+.dashboard-mini-card .mini-table th:nth-child(2),
+.dashboard-mini-card .mini-table td:nth-child(2) { width: auto; }
+.dashboard-mini-card .mini-table th:nth-child(3),
+.dashboard-mini-card .mini-table td:nth-child(3) { width: 80px; }
+.dashboard-mini-card .mini-table th:nth-child(4),
+.dashboard-mini-card .mini-table td:nth-child(4) { width: 90px; }
+
+/* Status pills */
+.status-pill {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-in-progress  { background: #dbeafe; color: #1d4ed8; }
+.status-on-hold      { background: #fef3c7; color: #92400e; }
+.status-open         { background: #dcfce7; color: #166534; }
+.status-new          { background: #e0f2fe; color: #0369a1; }
+.status-active       { background: #dcfce7; color: #166534; }
+.status-approved     { background: #ede9fe; color: #5b21b6; }
+.status-committed    { background: #f3e8ff; color: #6b21a8; }
+.status-information-received { background: #fce7f3; color: #9d174d; }
+.status-spr-filed    { background: #fef9c3; color: #713f12; }
+
+/* Dashboard section layout — same as other sections */
+#dashboardSection {
+    height: calc(100vh - 210px);
+    overflow: hidden;
+}
+
+#dashboardSection.active-section {
+    display: flex;
+    flex-direction: column;
+}
