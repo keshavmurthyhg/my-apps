@@ -1,19 +1,41 @@
+# =====================================================
+#  PTC CASE TRACKER LOADER
+# =====================================================
+#  Supports two modes, controlled by config.py:
+#
+#    USE_PTC_API = False → reads data/PTC.csv
+#    USE_PTC_API = True  → calls PTC REST API
+#
+#  To enable live API (when corporate access is granted):
+#    1. Set USE_PTC_API = True in modules/config.py
+#    2. Fill in PTC_BASE_URL, PTC_USERNAME, PTC_PASSWORD
+#
+#  NOTE: PTC Support portal REST API may require
+#  a service account — check with your PTC admin.
+# =====================================================
+
 import pandas as pd
+import requests
+from requests.auth import HTTPBasicAuth
+
+from modules.config import (
+    USE_PTC_API,
+    PTC_BASE_URL,
+    PTC_USERNAME,
+    PTC_PASSWORD,
+    PTC_CSV_PATH,
+    TRACKER_USERS,
+)
 
 from modules.common.utils.parsers import (
     clean_person_name,
     format_tracker_date,
-    normalize_priority
+    normalize_priority,
 )
 
-TRACKER_USERS = [
-    "pradnya",
-    "surendra",
-    "suram",
-    "ramesh",
-    "keshava",
-   
-]
+# ─────────────────────────────────────────────
+#  CONSTANTS
+# ─────────────────────────────────────────────
 
 ACTIVE_STATES = [
     "new",
@@ -23,107 +45,34 @@ ACTIVE_STATES = [
     "in progress",
     "on hold",
     "information received",
-    "spr filed"
+    "spr filed",
 ]
 
 
-def load_ptc_tracker():
+# ─────────────────────────────────────────────
+#  CSV FALLBACK  (current working mode)
+# ─────────────────────────────────────────────
+
+def _load_from_csv():
 
     try:
 
-        # --------------------------------------------------
-        # LOAD FILE
-        # --------------------------------------------------
-
         df = pd.read_csv(
-            "data/PTC.csv",
+            PTC_CSV_PATH,
             encoding="utf-8-sig",
             index_col=False,
-            low_memory=False
+            low_memory=False,
         )
 
-        # --------------------------------------------------
-        # DEBUGGING OUTPUT
-        # --------------------------------------------------
-
-        #print("\nRAW HEAD")
-        #print(df.head(3).to_string())
-
-        #print("\nRAW FIRST COLUMN")
-        #print(df.iloc[:, 0].head(10).tolist())
-
-        #print("\nRAW SECOND COLUMN")
-        #print(df.iloc[:, 1].head(10).tolist())
-
-        #print("\n==============================")
-        #print("RAW SHAPE")
-        #print("==============================")
-        #print(df.shape)
-
-        #print("\n==============================")
-        #print("RAW COLUMNS")
-        #print("==============================")
-        #print(df.columns.tolist())
-
-        #print("\n==============================")
-        #print("FIRST ROW")
-        #print("==============================")
-
-        #if len(df) > 0:
-        #    print(df.iloc[0].to_dict())
-
-        # --------------------------------------------------
-        # NORMALIZE COLUMNS
-        # --------------------------------------------------
-
+        # Normalize columns
         df.columns = (
             df.columns
             .astype(str)
             .str.replace("\ufeff", "", regex=False)
-            .str.replace("ï»¿", "", regex=False)
+            .str.replace("ï»¿",  "", regex=False)
             .str.strip()
             .str.lower()
         )
-
-        #print("\n==============================")
-        #print("NORMALIZED COLUMNS")
-        #print("==============================")
-        #print(df.columns.tolist())
-
-        # --------------------------------------------------
-        # DEBUG COLUMN CONTENT
-        # --------------------------------------------------
-
-        #debug_cols = [
-         #   "case number",
-         #   "case contact",
-          #  "case assignee",
-         #   "status",
-          #  "subject",
-         #   "severity",
-        #    "created date"
-        #]
-
-        #for col in debug_cols:
-
-        #    if col in df.columns:
-
-         #       print(f"\n===== {col.upper()} =====")
-#
-          #      try:
-          #          print(
-          #              df[col]
-          #              .dropna()
-         #               .astype(str)
-         #               .head(10)
-         #               .tolist()
-          #          )
-          #      except Exception as ex:
-          #          print(ex)
-
-        # --------------------------------------------------
-        # ENSURE COLUMNS EXIST
-        # --------------------------------------------------
 
         required_columns = [
             "case number",
@@ -132,20 +81,12 @@ def load_ptc_tracker():
             "case contact",
             "status",
             "severity",
-            "created date"
+            "created date",
         ]
 
         for col in required_columns:
-
             if col not in df.columns:
                 df[col] = ""
-
-        # --------------------------------------------------
-        # CLEAN VALUES
-        # --------------------------------------------------
-
-        for col in required_columns:
-
             df[col] = (
                 df[col]
                 .fillna("")
@@ -153,35 +94,16 @@ def load_ptc_tracker():
                 .str.strip()
             )
 
-        # --------------------------------------------------
-        # FILTER TRACKER USERS
-        # SAME LOGIC AS SEARCH
-        # --------------------------------------------------
-
-        #before_user_filter = len(df)
-
+        # Filter tracker users
         df = df[
             df["case contact"]
             .str.lower()
             .apply(
-                lambda x: any(
-                    user in x
-                    for user in TRACKER_USERS
-                )
+                lambda x: any(u in x for u in TRACKER_USERS)
             )
         ]
 
-        #print(
-            #f"\nRows after user filter: {len(df)} "
-           # f"(before={before_user_filter})"
-        #)
-
-        # --------------------------------------------------
-        # FILTER ACTIVE CASES
-        # --------------------------------------------------
-
-        #before_status_filter = len(df)
-
+        # Filter active states
         df = df[
             df["status"]
             .str.lower()
@@ -189,61 +111,128 @@ def load_ptc_tracker():
             .isin(ACTIVE_STATES)
         ]
 
-        #print(
-         #   f"Rows after status filter: {len(df)} "
-          #  f"(before={before_status_filter})"
-        #)
-
-        # --------------------------------------------------
-        # BUILD OUTPUT
-        # --------------------------------------------------
-
         ptc_df = pd.DataFrame({
-
-            "Number":
-                df["case number"],
-
-            "Vendor Ticket":
-                "",
-
-            "Description":
-                df["subject"],
-
-            "Assigned To":
-                df["case assignee"]
-                .apply(clean_person_name),
-
-            "Status":
-                df["status"],
-
-            "Priority":
-                df["severity"]
-                .apply(normalize_priority),
-
-            "Created By":
-                df["case contact"]
-                .apply(clean_person_name),
-
-            "Created Date":
-                df["created date"]
-                .apply(format_tracker_date)
-
+            "Number":        df["case number"],
+            "Vendor Ticket": "",
+            "Description":   df["subject"],
+            "Assigned To":   df["case assignee"].apply(clean_person_name),
+            "Status":        df["status"],
+            "Priority":      df["severity"].apply(normalize_priority),
+            "Created By":    df["case contact"].apply(clean_person_name),
+            "Created Date":  df["created date"].apply(format_tracker_date),
         })
 
         ptc_df = ptc_df.fillna("")
 
-        print("\n==============================")
-        print(f"PTC Tracker Rows: {len(ptc_df)}")
-        print("==============================")
-
-        return ptc_df.to_dict(
-            orient="records"
-        )
+        print(f"[PTC] CSV → {len(ptc_df)} active cases")
+        return ptc_df.to_dict(orient="records")
 
     except Exception as e:
 
-        print(
-            f"\nPTC Tracker Load Error: {e}"
+        print(f"[PTC] CSV load failed: {e}")
+        return []
+
+
+# ─────────────────────────────────────────────
+#  LIVE API  (USE_PTC_API = True)
+# ─────────────────────────────────────────────
+
+def _load_from_api():
+    """
+    Calls PTC Support REST API.
+
+    PTC uses a case management REST endpoint.
+    The exact path depends on your PTC portal version.
+
+    Common endpoints:
+      - Windchill RV&S:  /api/v1/cases
+      - PTC Support:     /appserver/cs/api/cases
+
+    Adjust the URL below to match your environment.
+    Your PTC admin can confirm the correct endpoint.
+    """
+
+    # ── Attempt PTC REST API ──────────────────
+    # Build user filter for case_contact field
+    user_filter = " OR ".join(
+        f'case_contact contains "{u}"'
+        for u in TRACKER_USERS
+    )
+
+    state_filter = " OR ".join(
+        f'status="{s}"' for s in ACTIVE_STATES
+    )
+
+    params = {
+        "filter": f"({state_filter}) AND ({user_filter})",
+        "limit":  500,
+        "fields": "case_number,subject,case_assignee,"
+                  "case_contact,status,severity,created_date",
+    }
+
+    url = f"{PTC_BASE_URL}/appserver/cs/api/cases"
+
+    try:
+
+        resp = requests.get(
+            url,
+            params=params,
+            auth=HTTPBasicAuth(PTC_USERNAME, PTC_PASSWORD),
+            timeout=15,
         )
 
-        return []
+        resp.raise_for_status()
+        records = resp.json().get("cases", [])
+
+    except Exception as e:
+
+        print(f"[PTC] API call failed: {e}")
+        print("[PTC] Falling back to CSV file")
+        return _load_from_csv()
+
+    rows = []
+
+    for r in records:
+
+        rows.append({
+            "Number":
+                str(r.get("case_number", "")),
+            "Vendor Ticket": "",
+            "Description":
+                str(r.get("subject", "")),
+            "Assigned To":
+                clean_person_name(
+                    str(r.get("case_assignee", ""))
+                ),
+            "Status":
+                str(r.get("status", "")),
+            "Priority":
+                normalize_priority(
+                    str(r.get("severity", ""))
+                ),
+            "Created By":
+                clean_person_name(
+                    str(r.get("case_contact", ""))
+                ),
+            "Created Date":
+                format_tracker_date(
+                    str(r.get("created_date", ""))
+                ),
+        })
+
+    print(f"[PTC] API → {len(rows)} active cases")
+    return rows
+
+
+# ─────────────────────────────────────────────
+#  PUBLIC ENTRY POINT
+# ─────────────────────────────────────────────
+
+def load_ptc_tracker():
+
+    if USE_PTC_API:
+        print("[PTC] Mode: LIVE API")
+        return _load_from_api()
+    else:
+        print("[PTC] Mode: CSV file (API disabled)")
+        return _load_from_csv()
