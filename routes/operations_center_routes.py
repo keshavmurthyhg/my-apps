@@ -25,6 +25,17 @@ from modules.common.utils.links import (
     get_url
 )
 
+#from modules.operations_center.ops_servicenow_collector import (
+#    incidents
+#)
+
+
+from modules.operations_center.ops_azure_collector import (
+    azure_cases
+)
+
+
+
 operations_center_bp = Blueprint(
     "operations_center",
     __name__
@@ -103,6 +114,10 @@ def operations_center():
     dashboard_data = (
         get_operations_dashboard_data()
     )
+
+    
+    dashboard_data["azure_data"] = azure_cases
+
 
     # -----------------------------------
     # INCIDENT LINKS
@@ -295,3 +310,26 @@ def integration_failures_api():
             "success": False,
             "message": str(e)
         })
+
+
+#@operations_center_bp.route(
+#    "/api/incidents"
+#)
+#def get_incidents():
+
+#    return jsonify({
+ #       "success": True,
+#        "data": incidents
+#    })
+
+
+@operations_center_bp.route(
+    "/api/azure-cases"
+)
+def get_azure_cases():
+
+    return jsonify({
+        "success": True,
+        "data": azure_cases
+    })
+

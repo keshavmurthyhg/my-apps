@@ -97,6 +97,12 @@ pip install python-pptx
 pip install pdf2image
 pip install python-docx
 
+Operations Center
+"""""""""""""""""
+pip install selenium webdriver-manager
+
+
+
 #############-----------------------------------------##############################
 
 Backup or sync with GITHUB

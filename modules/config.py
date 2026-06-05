@@ -15,6 +15,10 @@
 # =====================================================
 
 ENV = "DEV"
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # ─────────────────────────────────────────────
 #  DATA SOURCE TOGGLES
@@ -30,9 +34,9 @@ USE_PTC_API   = False   # True = live PTC REST API
 #  Auth: Basic (username + password)
 # ─────────────────────────────────────────────
 
-SNOW_INSTANCE  = "volvoitsm"          # => volvoitsm.service-now.com
-SNOW_USERNAME  = ""                   # your SNOW username
-SNOW_PASSWORD  = ""                   # your SNOW password (or use env var)
+SNOW_INSTANCE  = "https://volvoitsm.service-now.com/"          # => volvoitsm.service-now.com
+SNOW_USERNAME  = "keshavamurthy.hg@consultant.volvo.com"                   # your SNOW username
+SNOW_PASSWORD = os.getenv("SNOW_PASSWORD")            # your SNOW password (or use env var)
 
 # ─────────────────────────────────────────────
 #  AZURE DEVOPS
@@ -42,7 +46,7 @@ SNOW_PASSWORD  = ""                   # your SNOW password (or use env var)
 
 AZURE_ORG      = "VolvoGroup-DVP"
 AZURE_PROJECT  = "VCEWindchillPLM"
-AZURE_PAT      = ""                   # paste your PAT here
+AZURE_PAT      = os.getenv("AZURE_PAT")                   # paste your PAT here
 
 # ─────────────────────────────────────────────
 #  PTC
@@ -51,8 +55,8 @@ AZURE_PAT      = ""                   # paste your PAT here
 # ─────────────────────────────────────────────
 
 PTC_BASE_URL   = "https://support.ptc.com"
-PTC_USERNAME   = ""
-PTC_PASSWORD   = ""
+PTC_USERNAME   = "keshavamurthy.hg@consultant.volvo.com"
+PTC_PASSWORD  = os.getenv("PTC_PASSWORD")
 
 # ─────────────────────────────────────────────
 #  FALLBACK LOCAL FILES
