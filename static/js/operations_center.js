@@ -374,6 +374,11 @@ function updateKpis(section) {
                 document.getElementById("ptcKpis").innerHTML;
 
             break;
+
+        case "dashboard":
+            // Dashboard uses its own layout — no summaryGrid needed
+            html = "";
+            break;
     }
 
 
@@ -389,7 +394,7 @@ function updateKpis(section) {
             "summaryGrid"
         );
 
-    if(section === "failure") {
+    if (section === "failure" || section === "dashboard") {
 
         summaryGrid.style.display =
             "none";
@@ -1177,9 +1182,49 @@ async function showSection(section) {
             await loadIntegrationFailures();
         }
 
+    } else if (section === "dashboard") {
+
+        updateDashboardCounts();
+
     } else {
 
         buildFilters(section);
+    }
+}
+
+// ─────────────────────────────────────────────
+//  DASHBOARD OVERVIEW — update counts from live data
+// ─────────────────────────────────────────────
+function updateDashboardCounts() {
+
+    const set = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    };
+
+    if (window.supportData) {
+        set("dash-support-count", window.supportData.length);
+        const pending = window.supportData.filter(
+            x => String(x.category || "").includes("Action Required")
+        ).length;
+        set("dash-pending-actions",
+            pending + " pending action" + (pending !== 1 ? "s" : ""));
+    }
+
+    if (window.failureData) {
+        set("dash-failure-count", window.failureData.length);
+    }
+
+    if (window.incidentData) {
+        set("dash-incident-count", window.incidentData.length);
+    }
+
+    if (window.azureData) {
+        set("dash-azure-count", window.azureData.length);
+    }
+
+    if (window.ptcData) {
+        set("dash-ptc-count", window.ptcData.length);
     }
 }
 
